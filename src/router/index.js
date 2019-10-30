@@ -5,11 +5,13 @@ import Camera from '../pages/Camera'
 import Log from '../pages/Log'
 import About from '../pages/About'
 import Menu from '../components/Menu'
+import TopBar from '../components/TopBar'
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 
 const App = () => (
   <BrowserRouter>
     <div>
+      <TopBar />
       <Menu />
       <Switch>
         <Route 

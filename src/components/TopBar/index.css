@@ -1,0 +1,18 @@
+.top-bar {
+  position: fixed;
+  top: 0;
+  height: 50px;
+  width: 100%;
+  background-color: black;
+}
+.title {
+  color: white;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  width: 150px;
+  text-align: center;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
