@@ -6,7 +6,7 @@ export default class extends PureComponent {
   render() {
     return (
       <div className="top-bar">
-        <div class="title">
+        <div className="title">
           <Icon type="home" style={{marginRight: 5}}/>
           一键顺控系统
         </div>

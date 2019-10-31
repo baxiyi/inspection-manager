@@ -1,4 +1,24 @@
 .index {
-  font-size: 100px;
-  margin-left: 300px;
+  width: 70%;
+  display: inline-block;
+  margin-left: 50px;
+  margin-top: 50px;
+}
+.my-modal {
+  width: 50%;
+}
+.device-img {
+  height: 200px;
+  width: 200px;
+  display: block;
+  margin: auto;
+}
+.level-1 {
+  background-color:	#FF8C00;
+}
+.level-2 {
+  background-color:	#FFB90F;
+}
+.level-3 {
+  background-color:	#FFDEAD;
 }
