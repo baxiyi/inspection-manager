@@ -1,0 +1,24 @@
+.camera {
+  display: inline-block;
+  margin-left: 50px;
+  margin-top: 50px;
+  width: 70%; 
+}
+.camera-item {
+  width: 8%;
+  display: inline-block;
+  margin-right: 50px;
+  margin-bottom: 30px;
+}
+.my-button {
+  width: 100%;
+}
+.my-icon {
+  font-size: 30px;
+}
+.camera-desc {
+  text-align: center;
+  width: 100%;
+  font-size: 15px;
+  margin-top: 10px;
+}

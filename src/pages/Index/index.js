@@ -104,6 +104,7 @@ export default class extends PureComponent {
       {
         title: '序号',
         dataIndex: 'seq',
+        key: 'seq',
         render: (value, record) => {
           let obj = {
             children: record.index + 1,
@@ -120,22 +121,27 @@ export default class extends PureComponent {
       {
         title: '设备名称',
         dataIndex: 'devName', 
+        key: 'devName',
       },
       {
         title: '设备类型',
         dataIndex: 'devType',
+        key: 'devType',
       },
       {
         title: '所属屏柜',
         dataIndex: 'shelf',
+        key: 'shelf',
       },
       {
         title: '识别状态',
         dataIndex: 'status',
+        key: 'status',
       },
       {
         title: '出现时刻',
         dataIndex: 'time',
+        key: 'time',
         render: (value, record) => {
           let obj = {
             children: record.time,
@@ -152,16 +158,19 @@ export default class extends PureComponent {
       {
         title: '',
         dataIndex: 'imgUrl',
+        key: 'imgUrl',
         render: (value, record) => <a onClick={id => this.showPic(record.devId)}>查看图像</a>
       },
       {
         title: '',
         dataIndex: 'isHandle',
+        key: 'isHandle',
         render: (value, record) => <a onClick={id => this.handleWarning(record.warningId)}>标记为已处理</a>
       },
       {
         title: '',
         dataIndex: 'wrongWarning',
+        key: 'wrongWarning',
         render: (value, record) => <a onClick={id => this.wrongWarning(record.warningId)}>标记为误警告</a>
       }
     ];
@@ -175,6 +184,7 @@ export default class extends PureComponent {
         onOk={() => {
           this.setState({
             isShowDetail: false,
+            isShowPic: false,
           })
         }}
         onCancel={() => {
@@ -198,23 +208,28 @@ export default class extends PureComponent {
       {
         title: '序号',
         dataIndex: 'seq',
+        key: 'seq',
       },
       {
         title: '告警信息',
         dataIndex: 'infor',
+        key: 'infor',
       },
       {
         title: '出现次数',
         dataIndex: 'cnt',
+        key: 'cnt',
       },
       {
         title: '最近时刻',
         dataIndex: 'time',
+        key: 'time',
       },
       {
         title: '',
         dataIndex: 'detail',
-        render: (value, record) => <a className="detail-link" onClick={id => this.showDetail(record.id) }>查看详情</a>
+        key: 'detail',
+        render: (value, record) => <a onClick={id => this.showDetail(record.id) }>查看详情</a>
       }
     ];
     // 需要获取
