@@ -1,12 +1,20 @@
 import React, {PureComponent} from 'react'
 import {Menu} from 'antd'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import './index.css'
 
-export default class extends PureComponent {
+class MenuComp extends PureComponent {
   render() {
+    const map = {
+      '/': '1',
+      '/history': '2',
+      '/camera': '3',
+      '/log': '4',
+      '/about': '5',
+    };
+    const curPath = this.props.location.pathname;
     return (
-      <Menu defaultSelectedKeys={['1']}
+      <Menu defaultSelectedKeys={[map[curPath]]}
         mode="inline"
         className="menu"
       >
@@ -29,3 +37,5 @@ export default class extends PureComponent {
     )
   }
 }
+
+export default withRouter(MenuComp);

@@ -39,6 +39,8 @@ export default class extends PureComponent {
     this.setState({
       searchText: value,
     })
+    console.log('filter users')
+    this.updateLogs();
   }
 
   updateLogs() {

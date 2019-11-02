@@ -8,7 +8,7 @@ export default class extends PureComponent {
       <div className="top-bar">
         <div className="title">
           <Icon type="home" style={{marginRight: 5}}/>
-          一键顺控系统
+          一键巡检系统
         </div>
       </div>
     )
