@@ -262,6 +262,9 @@ export default class extends PureComponent {
     console.log(this.state.isShowPic)
     return (
       <div className="index">
+        <div className="warning-count">
+          {'当前警告数：' + data.length}
+        </div>
         <Table
           columns={columns}
           dataSource={data}
