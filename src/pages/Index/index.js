@@ -259,7 +259,6 @@ export default class extends PureComponent {
         level: '3'
       },
     ];
-    console.log(this.state.isShowPic)
     return (
       <div className="index">
         <div className="warning-count">
