@@ -4,6 +4,25 @@
   margin-left: 50px;
   margin-top: 50px;
 }
+.date {
+  margin-top: 20px;
+  display: inline-block;
+}
+.start-date {
+  display: inline-block;
+  margin-right: 20px;
+}
+.end-date {
+  display: inline-block;
+  margin-right: 30px;
+}
+.user-search {
+  margin-left: 30px;
+  display: inline-block;
+}
+.history-table {
+  margin-top: 50px;
+}
 .level-1 {
   background-color:	#FF8C00;
 }

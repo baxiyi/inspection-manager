@@ -280,6 +280,7 @@ export default class extends PureComponent {
             }
           }}
           bordered
+          pagination={false}
         ></Table>
         {this.renderDetail()}
       </div>
