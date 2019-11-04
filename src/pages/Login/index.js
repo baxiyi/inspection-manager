@@ -19,6 +19,7 @@ class Login extends PureComponent {
     message.info('登录成功');
     let storage = window.sessionStorage;
     storage.setItem('isLogin', "true");
+    storage.setItem('userId', this.state.userId)
     this.props.history.push('/');
     window.location.reload();
   }
