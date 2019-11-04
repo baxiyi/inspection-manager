@@ -1,5 +1,5 @@
 import React, {PureComponent} from 'react'
-import {Icon, Button, Modal, DatePicker, TimePicker, message} from 'antd'
+import {Icon, Button, Modal, DatePicker, TimePicker, message, Popover} from 'antd'
 import './index.css'
 import moment from 'moment';
 
@@ -14,6 +14,7 @@ export default class extends PureComponent {
       detailData: null,
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
+      shevesList: [],
     }
   }
 
@@ -66,15 +67,24 @@ export default class extends PureComponent {
     console.log('update');
   }
 
-  renderCamera(num) {
+  renderCamera(camera) {
+    const {hasShelf} = camera;
     return (
       <div className="camera-item">
-        <Button size="large" className="my-button" onClick={() => {
-          this.showDetail(num);
-        }}>
-          <Icon type="camera" theme="filled" className="my-icon"/>
-        </Button>
-        <div className="camera-desc">{num + '号'}</div>
+        {
+          hasShelf ? (
+            <div>
+              <Popover content={camera.detail}>
+                <Button size="large" className="my-button" onClick={() => {
+                  this.showDetail(camera.id);
+                }}>
+                  <Icon type="camera" theme="filled" className="my-icon"/>
+                </Button>
+              </Popover>
+              <div className="camera-desc">{camera.id + '号'}</div>
+            </div>
+          ) : null
+        }
       </div>
     )
   }
@@ -196,9 +206,21 @@ export default class extends PureComponent {
 
   render() {
     const cameraData = [
-      [{id: '1'}, {id: '2'}, {id: '3'}, {id: '4'}],
-      [{id: '5'}, {id: '6'}, {id: '7'}, {id: '8'}],
-      [{id: '9'}, {id: '10'}, {id: '11'}, {id: '12'}]
+      [
+        {hasShelf: false,}, 
+        {hasShelf: true, id: '1', detail: '1号屏柜'}, 
+        {hasShelf: true, id: '2', detail: '2号屏柜'}, 
+        {hasShelf: false,}],
+      [
+        {hasShelf: true, id: '3', detail: '3号屏柜'}, 
+        {hasShelf: false, id: '4', detail: '4号屏柜'}, 
+        {hasShelf: true, id: '5', detail: '5号屏柜'}, 
+        {hasShelf: false}],
+      [
+        {hasShelf: true, id: '6', detail: '6号屏柜'}, 
+        {hasShelf: false, id: '7', detail: '7号屏柜'}, 
+        {hasShelf: false}, 
+        {hasShelf: true, id: '8', detail: '8号屏柜'}]
     ];
     return(
       <div className="camera">
@@ -207,7 +229,7 @@ export default class extends PureComponent {
             <div>
               {
                 cameraRow.map((camera) => {
-                  return this.renderCamera(camera.id);
+                  return this.renderCamera(camera);
                 })
               }
             </div>

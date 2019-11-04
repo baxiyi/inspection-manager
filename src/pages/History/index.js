@@ -17,6 +17,36 @@ export default class extends PureComponent {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       searchText: '',
+      pageOffset: 0,
+      tableData: [
+        {
+          id: '1',
+          seq: '1',
+          infor: '告警信息1',
+          time: '2019-10-10 19:00:34',
+          status: '已处理',
+          handler: '处理人1',
+          level: '1',
+        },
+        {
+          id: '2',
+          seq: '2',
+          infor: '告警信息2',
+          time: '2019-10-11 14:00:00',
+          status: '已处理',
+          handler: '处理人2',
+          level: '2',
+        },
+        {
+          id: '3',
+          seq: '3',
+          infor: '告警信息3',
+          status: '已处理',
+          handler: '处理人3',
+          time: '2019-10-13 14:00:01',
+          level: '3',
+        },{},{},{},{},{},{},{seq: '10'},
+      ],
     }
   }
 
@@ -287,7 +317,7 @@ export default class extends PureComponent {
         handler: '处理人3',
         time: '2019-10-13 14:00:01',
         level: '3',
-      }
+      },{},{},{},{},{},{},{},{},{}
     ]
     return (
       <div className="history">
@@ -391,6 +421,15 @@ export default class extends PureComponent {
             }
           }}
           bordered
+          pagination={{
+            current: this.state.pageOffset + 1,
+            total: 12,
+            onChange: (page) => {
+              this.setState({
+                pageOffset: page - 1,
+              }, () => this.updateHistoryWarnings())
+            }
+          }}
         ></Table>
         {this.renderDetail()}
       </div>

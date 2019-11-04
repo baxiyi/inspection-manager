@@ -12,6 +12,7 @@ export default class extends PureComponent {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       searchText: '',
+      pageOffset: 0,
     }
   }
 
@@ -176,6 +177,15 @@ export default class extends PureComponent {
           dataSource={data}
           bordered
           className="log-table"
+          pagination={{
+            current: this.state.pageOffset + 1,
+            total: data.length,
+            onChange: (page) => {
+              this.setState({
+                pageOffset: page - 1,
+              }, () => this.updateLogs())
+            }
+          }}
         />
       </div>
     )
