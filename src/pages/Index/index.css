@@ -16,8 +16,8 @@
 .device-img {
   /* height: 200px;
   width: 200px; */
-  display: block;
-  margin: auto;
+  display: inline-block;
+  margin-right: 30px;
 }
 .level-1 {
   background-color:	#FF8C00;
@@ -27,4 +27,7 @@
 }
 .level-3 {
   background-color:	#FFDEAD;
+}
+.unable {
+  color: #CFCFCF;
 }

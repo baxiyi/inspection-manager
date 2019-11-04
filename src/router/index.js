@@ -58,7 +58,9 @@ export default class extends PureComponent {
             />
             <Route 
               path="/login"
-              component={Login}
+              render={props => {
+                return isLogin ? <Redirect to="/"/> : <Login />
+              }}
             />
           </Switch>
         </div>

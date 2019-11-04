@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react'
 import {Table, Modal} from 'antd'
 import './index.css'
 
-export default class extends PureComponent {
+export default class extends React.Component {
   
   constructor(props) {
     super(props);
@@ -10,7 +10,7 @@ export default class extends PureComponent {
       isShowDetail: false,
       detailData: [],
       isShowPic: false,
-      imgUrl: '',
+      imgUrls: '',
     }
   }
 
@@ -54,12 +54,72 @@ export default class extends PureComponent {
         ],
         time: '2019-10-20 18:00:19',
       }
+    ];
+    const data3 = [
+      {
+        warningId: 3,
+        seq: '1',
+        devices: [
+          {
+            devId: '11',
+            devName: '设备1',
+            devType: '类型1',
+            shelf: '屏柜1',
+            status: '开',
+          }
+        ],
+        time: '2019-10-20 18:00:19',
+      }, 
+      {
+        warningId: 4,
+        seq: '2',
+        devices: [
+          {
+            devId: '12',
+            devName: '设备2',
+            devType: '类型2',
+            shelf: '屏柜2',
+            status: '开',
+          }
+        ],
+        time: '2019-10-20 18:00:20',
+      },
+      {
+        warningId: 5,
+        seq: '3',
+        devices: [
+          {
+            devId: '13',
+            devName: '设备3',
+            devType: '类型3',
+            shelf: '屏柜3',
+            status: '关',
+          }
+        ],
+        time: '2019-10-20 18:00:30',
+      }
     ]
-    const data = id == '1' ? data1 : data2;
+    let data = null;
+    switch(id) {
+      case '1':
+        data = data1;
+        break;
+      case '2':
+        data = data2;
+        break;
+      case '3':
+        data = data3;
+        break;
+      default:
+        break;
+    }
     let res = [];
+    let isHandledObj = {};
     data.forEach((item, itemIndex) => {
+      isHandledObj[item.warningId] = false;
       let devices = item.devices.map((dev, index) => {
         return Object.assign(dev, {
+          seq: itemIndex + 1,
           index: index,
           time: item.time,
           // 警告的id
@@ -72,30 +132,37 @@ export default class extends PureComponent {
     this.setState({
       isShowDetail: true,
       detailData: res,
+      isHandledObj,
     })
   }
 
-  showPic(devId) {
+  showPic(warningId) {
     // 需要改
-    if (devId == 10) {
-      this.setState({
-        imgUrl: require('../../imgs/11.png'),
-        isShowPic: true,
-      });
-    } else {
-      this.setState({
-        imgUrl: require('../../imgs/10.png'),
-        isShowPic: true,
-      });
-    }
+    this.setState({
+      imgUrls: warningId == '1' ? [require('../../imgs/11.png'), require('../../imgs/10.png')] : [require('../../imgs/11.png')],
+      isShowPic: true,
+    });
     console.log('show pic')
   }
 
   handleWarning(warningId) {
+    const {isHandledObj} = this.state;
+    let newObj = isHandledObj;
+    newObj[warningId] = true;
+    this.setState({
+      isHandledObj: newObj,
+    })
+    console.log(newObj)
     console.log(warningId)
   }
 
   wrongWarning(warningId) {
+    const {isHandledObj} = this.state;
+    let newObj = isHandledObj;
+    newObj[warningId] = true;
+    this.setState({
+      isHandledObj: newObj,
+    })
     console.log(warningId)
   }
 
@@ -107,7 +174,7 @@ export default class extends PureComponent {
         key: 'seq',
         render: (value, record) => {
           let obj = {
-            children: record.index + 1,
+            children: record.seq,
             props: {},
           };
           if (record.index == 0) {
@@ -159,19 +226,56 @@ export default class extends PureComponent {
         title: '',
         dataIndex: 'imgUrl',
         key: 'imgUrl',
-        render: (value, record) => <a onClick={id => this.showPic(record.devId)}>查看图像</a>
+        render: (value, record) => {
+          let obj = {
+            children: (<a onClick={id => this.showPic(record.warningId)}>查看图像</a>),
+            props: {},
+          };
+          if (record.index == 0) {
+            obj.props.rowSpan = record.devLen;
+          } else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        }
       },
       {
         title: '',
         dataIndex: 'isHandle',
         key: 'isHandle',
-        render: (value, record) => <a onClick={id => this.handleWarning(record.warningId)}>标记为已处理</a>
+        render: (value, record) => {
+          let obj = {
+            children: this.state.isHandledObj[record.warningId]
+            ?  <span className="unable">标记为已处理</span>
+            :<a onClick={() => this.handleWarning(record.warningId)}>标记为已处理</a>,
+            props: {},
+          };
+          if (record.index == 0) {
+            obj.props.rowSpan = record.devLen;
+          } else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        }
       },
       {
         title: '',
         dataIndex: 'wrongWarning',
         key: 'wrongWarning',
-        render: (value, record) => <a onClick={id => this.wrongWarning(record.warningId)}>标记为误警告</a>
+        render: (value, record) => {
+          let obj = {
+            children: this.state.isHandledObj[record.warningId]
+            ?  <span className="unable">标记为误告警</span>
+            : (<a onClick={() => this.wrongWarning(record.warningId)}>标记为误警告</a>),
+            props: {},
+          };
+          if (record.index == 0) {
+            obj.props.rowSpan = record.devLen;
+          } else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        }
       }
     ];
     return (
@@ -185,12 +289,14 @@ export default class extends PureComponent {
           this.setState({
             isShowDetail: false,
             isShowPic: false,
+            isHandledObj: {},
           })
         }}
         onCancel={() => {
           this.setState({
             isShowDetail: false,
             isShowPic: false,
+            isHandledObj: {},
           })
         }}
       >
@@ -199,11 +305,20 @@ export default class extends PureComponent {
           dataSource={this.state.detailData}
           bordered
         ></Table>
-        {this.state.isShowPic && <img className="device-img" src={this.state.imgUrl} alt="设备图片"></img>}
+        {this.state.isShowPic ? (
+          <div>
+            {
+              this.state.imgUrls.map((url) => (
+                <img className="device-img" src={url} alt="设备图片"></img>
+              ))
+            }
+          </div>
+        ) : null}
       </Modal>
     )
   }
   render() {
+    console.log('render')
     const columns = [
       {
         title: '序号',
