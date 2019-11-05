@@ -1,0 +1,52 @@
+{
+  "code": 0,
+  "data": {
+      "totalPages": 0,
+      "pageSize": 0,
+      "pageNumber": 0,
+      "paged": false,
+      "pageData": [
+          {
+              "warningId": 3,
+              "occurTime": "2019-09-20 14:30:00",
+              "rulebaseByRulebaseId": {
+                  "rulebaseId": 2,
+                  "warningInfo": "3号屏柜1号主变温度显示过高",
+                  "importance": 2,
+                  "ruleitemsByRulebaseId": [
+                      {
+                          "ruleitemId": 4,
+                          "unitId1": 310201,
+                          "unitId2": null,
+                          "relation": "unary",
+                          "rulebaseByRulebaseId": 2
+                      },
+                      {
+                          "ruleitemId": 5,
+                          "unitId1": 310202,
+                          "unitId2": null,
+                          "relation": "unary",
+                          "rulebaseByRulebaseId": 2
+                      },
+                      {
+                          "ruleitemId": 6,
+                          "unitId1": 310203,
+                          "unitId2": null,
+                          "relation": "unary",
+                          "rulebaseByRulebaseId": 2
+                      }
+                  ]
+              },
+              "usrByUsrId": null,
+              "state": null
+          },
+          {
+              "warningId": 2,
+              "occurTime": "2019-09-20 14:12:59",
+              "rulebaseByRulebaseId": 2,
+              "usrByUsrId": null,
+              "state": null
+          }
+      ]
+  }
+}

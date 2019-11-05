@@ -1,0 +1,87 @@
+{
+  "code": 0,
+  "data": {
+      "totalPages": 1,
+      "pageSize": 5,
+      "pageNumber": 0,
+      "paged": true,
+      "pageData": [
+          {
+              "warningId": 2,
+              "occurTime": "2019-09-20 14:12:59",
+              "rulebaseByRulebaseId": {
+                  "rulebaseId": 2,
+                  "warningInfo": "3号屏柜1号主变温度显示过高",
+                  "importance": 2,
+                  "ruleitemsByRulebaseId": [
+                      {
+                          "ruleitemId": 4,
+                          "unitId1": 310201,
+                          "unitId2": null,
+                          "relation": "unary",
+                          "rulebaseByRulebaseId": 2
+                      },
+                      {
+                          "ruleitemId": 5,
+                          "unitId1": 310202,
+                          "unitId2": null,
+                          "relation": "unary",
+                          "rulebaseByRulebaseId": 2
+                      },
+                      {
+                          "ruleitemId": 6,
+                          "unitId1": 310203,
+                          "unitId2": null,
+                          "relation": "unary",
+                          "rulebaseByRulebaseId": 2
+                      }
+                  ]
+              },
+              "usrByUsrId": {
+                  "usrId": 21717000,
+                  "usrName": "admin",
+                  "usrPrivilege": 3
+              },
+              "state": 2
+          },
+          {
+              "warningId": 1,
+              "occurTime": "2019-09-20 14:12:59",
+              "rulebaseByRulebaseId": {
+                  "rulebaseId": 1,
+                  "warningInfo": "3号屏柜1号主变装置指示灯显示出现错误",
+                  "importance": 1,
+                  "ruleitemsByRulebaseId": [
+                      {
+                          "ruleitemId": 1,
+                          "unitId1": 310101,
+                          "unitId2": 310102,
+                          "relation": "ineq",
+                          "rulebaseByRulebaseId": 1
+                      },
+                      {
+                          "ruleitemId": 2,
+                          "unitId1": 310101,
+                          "unitId2": 310103,
+                          "relation": "ineq",
+                          "rulebaseByRulebaseId": 1
+                      },
+                      {
+                          "ruleitemId": 3,
+                          "unitId1": 310101,
+                          "unitId2": 310104,
+                          "relation": "eq",
+                          "rulebaseByRulebaseId": 1
+                      }
+                  ]
+              },
+              "usrByUsrId": {
+                  "usrId": 21717013,
+                  "usrName": "mao",
+                  "usrPrivilege": 1
+              },
+              "state": 1
+          }
+      ]
+  }
+}

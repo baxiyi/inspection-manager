@@ -15,7 +15,25 @@ export default class extends PureComponent {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       shevesList: [],
+      maxRow: 0,
+      maxCow: 0,
     }
+  }
+
+  componentDidMount() {
+    fetch(`../jsons/getShelvesList.json`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      const {maxRow} = response.data.pageData;
+      const {maxCol} = response.data.pageData;
+      const {shelves} = response.data.pageData;
+      this.setState({
+        maxRow,
+        maxCol,
+        shevesList: shelves,
+      })
+    })
   }
 
   getOneHourBefore() {
@@ -68,20 +86,20 @@ export default class extends PureComponent {
   }
 
   renderCamera(camera) {
-    const {hasShelf} = camera;
+    const hasShelf = camera == null ? false : true;
     return (
       <div className="camera-item">
         {
           hasShelf ? (
             <div>
-              <Popover content={camera.detail}>
+              <Popover content={camera.shelfName}>
                 <Button size="large" className="my-button" onClick={() => {
-                  this.showDetail(camera.id);
+                  this.showDetail(camera.shelfId);
                 }}>
                   <Icon type="camera" theme="filled" className="my-icon"/>
                 </Button>
               </Popover>
-              <div className="camera-desc">{camera.id + '号'}</div>
+              <div className="camera-desc">{camera.shelfId + '号'}</div>
             </div>
           ) : null
         }
@@ -205,23 +223,24 @@ export default class extends PureComponent {
   }
 
   render() {
-    const cameraData = [
-      [
-        {hasShelf: false,}, 
-        {hasShelf: true, id: '1', detail: '1号屏柜'}, 
-        {hasShelf: true, id: '2', detail: '2号屏柜'}, 
-        {hasShelf: false,}],
-      [
-        {hasShelf: true, id: '3', detail: '3号屏柜'}, 
-        {hasShelf: false, id: '4', detail: '4号屏柜'}, 
-        {hasShelf: true, id: '5', detail: '5号屏柜'}, 
-        {hasShelf: false}],
-      [
-        {hasShelf: true, id: '6', detail: '6号屏柜'}, 
-        {hasShelf: false, id: '7', detail: '7号屏柜'}, 
-        {hasShelf: false}, 
-        {hasShelf: true, id: '8', detail: '8号屏柜'}]
-    ];
+    // const cameraData = [
+    //   [
+    //     {hasShelf: false,}, 
+    //     {hasShelf: true, id: '1', detail: '1号屏柜'}, 
+    //     {hasShelf: true, id: '2', detail: '2号屏柜'}, 
+    //     {hasShelf: false,}],
+    //   [
+    //     {hasShelf: true, id: '3', detail: '3号屏柜'}, 
+    //     {hasShelf: false, id: '4', detail: '4号屏柜'}, 
+    //     {hasShelf: true, id: '5', detail: '5号屏柜'}, 
+    //     {hasShelf: false}],
+    //   [
+    //     {hasShelf: true, id: '6', detail: '6号屏柜'}, 
+    //     {hasShelf: false, id: '7', detail: '7号屏柜'}, 
+    //     {hasShelf: false}, 
+    //     {hasShelf: true, id: '8', detail: '8号屏柜'}]
+    // ];
+    const cameraData = this.state.shevesList;
     return(
       <div className="camera">
         {

@@ -11,10 +11,64 @@ export default class extends React.Component {
       detailData: [],
       isShowPic: false,
       imgUrls: '',
+      currentWarningsData: [],
+      pageOffset: 1,
+      totalPages: 0,
     }
   }
 
+  componentDidMount() {
+    fetch(`../jsons/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      console.log(response);
+      const {pageData} = response.data;
+      let data = pageData.map((item, index) => {
+        return Object.assign(item, {
+          id: item.ruleId,
+          infor: item.info,
+          seq: index + 1,
+        });
+      });
+      const {totalPages} = response.data;
+      this.setState({
+        currentWarningsData: data,
+        totalPages,
+      })
+    })
+  }
+
+  updateCurrentWarnings() {
+    fetch(`../jsons/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      console.log(response);
+      const {pageData} = response.data;
+      let data = pageData.map((item, index) => {
+        return Object.assign(item, {
+          id: item.ruleId,
+          infor: item.info,
+          seq: index + 1,
+        });
+      });
+      const {totalPages} = response.data;
+      this.setState({
+        currentWarningsData: data,
+        totalPages,
+      })
+    })
+    console.log('update');
+  }
+
   showDetail(id) {
+    fetch(`../jsons/getCurrentSameWarnings?ruleId=${id}`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+
+    })
     // detialData是获取的
     const data1 = [
       {
@@ -101,13 +155,13 @@ export default class extends React.Component {
     ]
     let data = null;
     switch(id) {
-      case '1':
+      case 1:
+        data = data3;
+        break;
+      case 2:
         data = data1;
         break;
-      case '2':
-        data = data2;
-        break;
-      case '3':
+      case 3:
         data = data3;
         break;
       default:
@@ -348,32 +402,33 @@ export default class extends React.Component {
       }
     ];
     // 需要获取
-    const data = [
-      {
-        id: '1',
-        seq: '1',
-        infor: '告警信息1',
-        cnt: '1',
-        time: '2019-10-10 16:00:43',
-        level: '1',
-      },
-      {
-        id: '2',
-        seq: '2',
-        infor: '告警信息2',
-        cnt: '1',
-        time: '2019-10-12 15:00:43',
-        level: '2',
-      },
-      {
-        id: '3',
-        seq: '3',
-        infor: '告警信息3',
-        cnt: '3',
-        time: '2019-10-15 16:00:43',
-        level: '3'
-      },
-    ];
+    // const data = [
+    //   {
+    //     id: '1',
+    //     seq: '1',
+    //     infor: '告警信息1',
+    //     cnt: '1',
+    //     time: '2019-10-10 16:00:43',
+    //     level: '1',
+    //   },
+    //   {
+    //     id: '2',
+    //     seq: '2',
+    //     infor: '告警信息2',
+    //     cnt: '1',
+    //     time: '2019-10-12 15:00:43',
+    //     level: '2',
+    //   },
+    //   {
+    //     id: '3',
+    //     seq: '3',
+    //     infor: '告警信息3',
+    //     cnt: '3',
+    //     time: '2019-10-15 16:00:43',
+    //     level: '3'
+    //   },
+    // ];
+    const data = this.state.currentWarningsData;
     return (
       <div className="index">
         <div className="warning-count">
@@ -384,18 +439,26 @@ export default class extends React.Component {
           dataSource={data}
           rowClassName={(record) => {
             switch(record.level) {
-              case '1':
+              case 1:
                 return 'level-1';
-              case '2':
+              case 2:
                 return 'level-2';
-              case '3':
+              case 3:
                 return 'level-3';
               default:
                 return;
             }
           }}
           bordered
-          pagination={false}
+          pagination={{
+            current: this.state.pageOffset,
+            total: this.state.totalPages*10,
+            onChange: (page) => {
+              this.setState({
+                pageOffset: page,
+              }, () => this.updateCurrentWarnings())
+            }
+          }}
         ></Table>
         {this.renderDetail()}
       </div>

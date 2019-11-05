@@ -13,7 +13,51 @@ export default class extends PureComponent {
       endTime: new Date(),
       searchText: '',
       pageOffset: 0,
+      totalPages: 0,
+      tableData: [],
     }
+  }
+
+  componentDidMount() {
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    fetch(`../jsons/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}
+    &endTime=${endTime}&page=${this.state.pageOffset}&size=10`)
+    .then(response => response.json())
+    .then(response => {
+      const {totalPages} = response.data;
+      console.log(totalPages)
+      const {pageData} = response.data;
+      const tableData = pageData.map((item, index) => {
+        return {
+          logId: item.logId,
+          seq: index + 1,
+          date: item.logTime,
+          handleDetail: item.content,
+          user: item.usrByUsrId.usrName,
+        }
+      });
+      this.setState({
+        tableData,
+        totalPages,
+      })
+    })
+  }
+
+  formatDate (date, fmt) {
+    var o = {
+        "M+": date.getMonth() + 1, //月份 
+        "d+": date.getDate(), //日 
+        "h+": date.getHours(), //小时 
+        "m+": date.getMinutes(), //分 
+        "s+": date.getSeconds(), //秒 
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+        "S": date.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
   }
 
   getOneHourBefore() {
@@ -67,26 +111,27 @@ export default class extends PureComponent {
       }
     ];
     // 需获取
-    const data = [
-      {
-        seq: '1',
-        date: '2019-10-11',
-        handleDetail: '操作1',
-        user: '用户1',
-      },
-      {
-        seq: '2',
-        date: '2019-10-11',
-        handleDetail: '操作2',
-        user: '用户2',
-      },
-      {
-        seq: '3',
-        date: '2019-10-10',
-        handleDetail: '操作3',
-        user: '用户3',
-      }
-    ]
+    // const data = [
+    //   {
+    //     seq: '1',
+    //     date: '2019-10-11',
+    //     handleDetail: '操作1',
+    //     user: '用户1',
+    //   },
+    //   {
+    //     seq: '2',
+    //     date: '2019-10-11',
+    //     handleDetail: '操作2',
+    //     user: '用户2',
+    //   },
+    //   {
+    //     seq: '3',
+    //     date: '2019-10-10',
+    //     handleDetail: '操作3',
+    //     user: '用户3',
+    //   }
+    // ]
+    const data = this.state.tableData;
     return (
       <div className="log">
         <div className="date">
@@ -178,11 +223,11 @@ export default class extends PureComponent {
           bordered
           className="log-table"
           pagination={{
-            current: this.state.pageOffset + 1,
-            total: data.length,
+            current: this.state.pageOffset,
+            total: this.state.totalPages*10,
             onChange: (page) => {
               this.setState({
-                pageOffset: page - 1,
+                pageOffset: page,
               }, () => this.updateLogs())
             }
           }}

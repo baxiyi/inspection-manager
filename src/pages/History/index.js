@@ -17,37 +17,54 @@ export default class extends PureComponent {
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       searchText: '',
-      pageOffset: 0,
-      tableData: [
-        {
-          id: '1',
-          seq: '1',
-          infor: '告警信息1',
-          time: '2019-10-10 19:00:34',
-          status: '已处理',
-          handler: '处理人1',
-          level: '1',
-        },
-        {
-          id: '2',
-          seq: '2',
-          infor: '告警信息2',
-          time: '2019-10-11 14:00:00',
-          status: '已处理',
-          handler: '处理人2',
-          level: '2',
-        },
-        {
-          id: '3',
-          seq: '3',
-          infor: '告警信息3',
-          status: '已处理',
-          handler: '处理人3',
-          time: '2019-10-13 14:00:01',
-          level: '3',
-        },{},{},{},{},{},{},{seq: '10'},
-      ],
+      pageOffset: 1,
+      tableData: [],
+      totalPages: 1,
     }
+  }
+
+  formatDate (date, fmt) {
+    var o = {
+        "M+": date.getMonth() + 1, //月份 
+        "d+": date.getDate(), //日 
+        "h+": date.getHours(), //小时 
+        "m+": date.getMinutes(), //分 
+        "s+": date.getSeconds(), //秒 
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+        "S": date.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+  }
+
+  componentDidMount() {
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    fetch(`../jsons/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      console.log(response);
+      const {pageData} = response.data;
+      const tableData = pageData.map((item, index) => {
+        return {
+          id: item.warningId,
+          seq: index + 1,
+          infor: item.rulebaseByRulebaseId.warningInfo,
+          time: item.occurTime,
+          level: item.rulebaseByRulebaseId.importance,
+          status: item.state == 1 ? '已处理' : '误告警',
+          handler: item.usrByUsrId.usrName,
+        }
+      });
+      const {totalPages} = response.data;
+      this.setState({
+        tableData,
+        totalPages,
+      })
+    })
   }
 
   getOneHourBefore() {
@@ -290,35 +307,36 @@ export default class extends PureComponent {
         render: (value, record) => <a onClick={(id) => this.showDetail(record.id)}>查看详情</a>
       }
     ];
-    const data = [
-      {
-        id: '1',
-        seq: '1',
-        infor: '告警信息1',
-        time: '2019-10-10 19:00:34',
-        status: '已处理',
-        handler: '处理人1',
-        level: '1',
-      },
-      {
-        id: '2',
-        seq: '2',
-        infor: '告警信息2',
-        time: '2019-10-11 14:00:00',
-        status: '已处理',
-        handler: '处理人2',
-        level: '2',
-      },
-      {
-        id: '3',
-        seq: '3',
-        infor: '告警信息3',
-        status: '已处理',
-        handler: '处理人3',
-        time: '2019-10-13 14:00:01',
-        level: '3',
-      },{},{},{},{},{},{},{},{},{}
-    ]
+    // const data = [
+    //   {
+    //     id: '1',
+    //     seq: '1',
+    //     infor: '告警信息1',
+    //     time: '2019-10-10 19:00:34',
+    //     status: '已处理',
+    //     handler: '处理人1',
+    //     level: '1',
+    //   },
+    //   {
+    //     id: '2',
+    //     seq: '2',
+    //     infor: '告警信息2',
+    //     time: '2019-10-11 14:00:00',
+    //     status: '已处理',
+    //     handler: '处理人2',
+    //     level: '2',
+    //   },
+    //   {
+    //     id: '3',
+    //     seq: '3',
+    //     infor: '告警信息3',
+    //     status: '已处理',
+    //     handler: '处理人3',
+    //     time: '2019-10-13 14:00:01',
+    //     level: '3',
+    //   },{},{},{},{},{},{},{},{},{}
+    // ]
+    const data = this.state.tableData;
     return (
       <div className="history">
         <div className="date">
@@ -410,11 +428,11 @@ export default class extends PureComponent {
           className="history-table"
           rowClassName={(record) => {
             switch(record.level) {
-              case '1':
+              case 1:
                 return 'level-1';
-              case '2':
+              case 2:
                 return 'level-2';
-              case '3':
+              case 3:
                 return 'level-3';
               default:
                 return;
@@ -422,11 +440,11 @@ export default class extends PureComponent {
           }}
           bordered
           pagination={{
-            current: this.state.pageOffset + 1,
-            total: 12,
+            current: this.state.pageOffset,
+            total: this.state.totalPages*10,
             onChange: (page) => {
               this.setState({
-                pageOffset: page - 1,
+                pageOffset: page,
               }, () => this.updateHistoryWarnings())
             }
           }}
