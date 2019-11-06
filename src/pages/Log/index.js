@@ -225,6 +225,7 @@ export default class extends PureComponent {
           pagination={{
             current: this.state.pageOffset,
             total: this.state.totalPages*10,
+            pageSize: 10,
             onChange: (page) => {
               this.setState({
                 pageOffset: page,

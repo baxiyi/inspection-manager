@@ -48,12 +48,17 @@
 }
 .images {
   margin-top: 50px;
+  margin-bottom: 30px;
 }
 .shelf-img {
-  /* width: 300px;
-  height: 300px; */
   display: inline-block;
   margin-right: 50px;
+}
+.shelf-image {
+  width: 100px;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 .img-desc {
   width: 100%;

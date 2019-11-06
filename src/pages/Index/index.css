@@ -13,11 +13,18 @@
 .my-modal {
   width: 50%;
 }
-.device-img {
-  /* height: 200px;
-  width: 200px; */
+.device-img-item {
+  width: 200px;
   display: inline-block;
   margin-right: 30px;
+}
+.device-img {
+  width: 100%;
+}
+.device-img-desc {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
 }
 .level-1 {
   background-color:	#FF8C00;

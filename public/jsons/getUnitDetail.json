@@ -1,0 +1,33 @@
+{
+  "code": 0,
+  "data": {
+      "totalPages": 0,
+      "pageSize": 0,
+      "pageNumber": 0,
+      "paged": false,
+      "pageData": {
+          "unitId": 310101,
+          "category": "small-lamp",
+          "meaning": "第一组1母电压",
+          "validStatus": "b(1)",
+          "enabled": 1,
+          "deviceByDeviceId": {
+              "deviceId": 3101,
+              "deviceName": "1号主变装置",
+              "partByPartId": {
+                  "partId": 31,
+                  "partSeq": 1,
+                  "camera": "192.0.0.31",
+                  "shelfByShelfId": {
+                      "shelfId": 3,
+                      "shelfName": "1号主变测控屏",
+                      "posX": 1.0,
+                      "posY": 3.0,
+                      "partNum": 1
+                  }
+              },
+              "lineByLineId": null
+          }
+      }
+  }
+}

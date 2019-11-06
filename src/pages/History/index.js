@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react'
 import {Table, Modal, message, DatePicker, TimePicker, Button, Input} from 'antd'
 import './index.css'
 import moment from 'moment'
+import Zmage from 'react-zmage'
 
 const {Search} = Input;
 
@@ -13,7 +14,7 @@ export default class extends PureComponent {
       isShowDetail: false,
       detailData: [],
       isShowPic: false,
-      imgUrl: '',
+      imgUrls: [],
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       searchText: '',
@@ -83,6 +84,7 @@ export default class extends PureComponent {
     }
     if (start.getTime() > now.getTime() || end.getTime() > now.getTime()) {
       message.error('开始时间和结束时间均须在当前时间之前');
+      return;
     }
     this.updateHistoryWarnings();
   }
@@ -96,82 +98,171 @@ export default class extends PureComponent {
 
   updateHistoryWarnings() {
     console.log('update history warnings')
-  }
-
-  showDetail(id) {
-    // detialData是获取的
-    const data1 = [
-      {
-        warningId: 1,
-        seq: '1',
-        devices: [
-          {
-            devId: '10',
-            devName: '设备1',
-            devType: '类型1',
-            shelf: '屏柜1',
-            status: '开',
-          },
-          {
-            devId: '12',
-            devName: '设备2',
-            devType: '类型2',
-            shelf: '屏柜2',
-            status: '关',
-          }
-        ],
-        time: '2019-10-30 18:00:44',
-      }
-    ];
-    const data2 = [
-      {
-        warningId: 2,
-        seq: '1',
-        devices: [
-          {
-            devId: '11',
-            devName: '设备1',
-            devType: '类型1',
-            shelf: '屏柜1',
-            status: '开',
-          }
-        ],
-        time: '2019-10-20 18:00:19',
-      }
-    ]
-    const data = id == '1' ? data1 : data2;
-    let res = [];
-    data.forEach((item, itemIndex) => {
-      let devices = item.devices.map((dev, index) => {
-        return Object.assign(dev, {
-          index: index,
-          time: item.time,
-          // 警告的id
-          warningId: item.warningId,
-          devLen: item.devices.length,
-        })
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    fetch(`../jsons/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      console.log(response);
+      const {pageData} = response.data;
+      const tableData = pageData.map((item, index) => {
+        return {
+          id: item.warningId,
+          seq: index + 1,
+          infor: item.rulebaseByRulebaseId.warningInfo,
+          time: item.occurTime,
+          level: item.rulebaseByRulebaseId.importance,
+          status: item.state == 1 ? '已处理' : '误告警',
+          handler: item.usrByUsrId.usrName,
+        }
       });
-      res = res.concat(devices);
-    });
-    this.setState({
-      isShowDetail: true,
-      detailData: res,
+      const {totalPages} = response.data;
+      this.setState({
+        tableData,
+        totalPages,
+      })
     })
   }
 
-  showPic(devId) {
+  showDetail(id) {
+    fetch(`../jsons/getWarningDetail.json?warningId=${id}`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(async response => {
+      const warning = response.data.pageData;
+      let res = {};
+      res.warningId = warning.warningId;
+      res.seq = 1;
+      res.time = warning.occurTime;
+      const devicesInfo = warning.rulebaseByRulebaseId.ruleitemsByRulebaseId;
+      const deviceIdsSet = new Set();
+      for (let item of devicesInfo) {
+        deviceIdsSet.add(item.unitId1);
+        deviceIdsSet.add(item.unitId2);
+      }
+      const deviceIds = [...deviceIdsSet];
+      const promises = deviceIds.map((id) => fetch(`../jsons/getUnitDetail.json?unitId=${id}`, {
+        method: 'GET',
+      })
+        .then(response => response.json())
+        .then(response => {
+          const {pageData} = response.data;
+          return {
+            devId: pageData.unitId,
+            devName: pageData.deviceByDeviceId.deviceName,
+            devType: pageData.category,
+            shelf: pageData.deviceByDeviceId.partByPartId.shelfByShelfId.shelfName,
+            status: pageData.enabled == 1 ? '开' : '关',
+          }
+        })
+      );
+      res.devices = await Promise.all(promises)
+      return res;
+    }).then(data => {
+        let devices = data.devices.map((dev, index) => {
+          return Object.assign(dev, {
+            seq: 1,
+            index: index,
+            time: data.time,
+            // 警告的id
+            warningId: data.warningId,
+            devLen: data.devices.length,
+          })
+        });
+        this.setState({
+          isShowDetail: true,
+          detailData: devices,
+        })
+      });
+    // detialData是获取的
+    // const data1 = [
+    //   {
+    //     warningId: 1,
+    //     seq: '1',
+    //     devices: [
+    //       {
+    //         devId: '10',
+    //         devName: '设备1',
+    //         devType: '类型1',
+    //         shelf: '屏柜1',
+    //         status: '开',
+    //       },
+    //       {
+    //         devId: '12',
+    //         devName: '设备2',
+    //         devType: '类型2',
+    //         shelf: '屏柜2',
+    //         status: '关',
+    //       }
+    //     ],
+    //     time: '2019-10-30 18:00:44',
+    //   }
+    // ];
+    // const data2 = [
+    //   {
+    //     warningId: 2,
+    //     seq: '1',
+    //     devices: [
+    //       {
+    //         devId: '11',
+    //         devName: '设备1',
+    //         devType: '类型1',
+    //         shelf: '屏柜1',
+    //         status: '开',
+    //       }
+    //     ],
+    //     time: '2019-10-20 18:00:19',
+    //   }
+    // ]
+    // const data = id == '1' ? data1 : data2;
+    // let res = [];
+    // data.forEach((item, itemIndex) => {
+    //   let devices = item.devices.map((dev, index) => {
+    //     return Object.assign(dev, {
+    //       index: index,
+    //       time: item.time,
+    //       // 警告的id
+    //       warningId: item.warningId,
+    //       devLen: item.devices.length,
+    //     })
+    //   });
+    //   res = res.concat(devices);
+    // });
+    // this.setState({
+    //   isShowDetail: true,
+    //   detailData: res,
+    // })
+  }
+
+  async showPic() {
+    const devices = this.state.detailData;
+    const imgUrls = await Promise.all(
+      devices.map(dev => fetch(`../jsons/getDeviceImg.json?warningId=${dev.warningId}&unitId=${dev.devId}`)
+      .then(response => response.json())
+      .then(response => {
+        return {
+          url: response.pageData,
+          desc: dev.devName,
+        }
+      })
+    ));
+    this.setState({
+      imgUrls,
+      isShowPic: true,
+    })
     // 需要改
-    if (devId == 10) {
-      this.setState({
-        imgUrl: require('../../imgs/11.png'),
-        isShowPic: true,
-      });
-    } else {
-      this.setState({
-        imgUrl: require('../../imgs/10.png'),
-        isShowPic: true,
-      });
-    }
+    // if (devId == 10) {
+    //   this.setState({
+    //     imgUrl: require('../../imgs/11.png'),
+    //     isShowPic: true,
+    //   });
+    // } else {
+    //   this.setState({
+    //     imgUrl: require('../../imgs/10.png'),
+    //     isShowPic: true,
+    //   });
+    // }
     console.log('show pic')
   }
 
@@ -235,19 +326,52 @@ export default class extends PureComponent {
         title: '',
         dataIndex: 'imgUrl',
         key: 'imgUrl',
-        render: (value, record) => <a onClick={id => this.showPic(record.devId)}>查看图像</a>
+        render: (value, record) => {
+          let obj = {
+            children: <a onClick={id => this.showPic()}>查看图像</a>,
+            props: {},
+          };
+          if (record.index == 0) {
+            obj.props.rowSpan = record.devLen;
+          } else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        }
       },
       {
         title: '',
         dataIndex: 'isHandle',
         key: 'isHandle',
-        render: (value, record) => <span className="unable">标记为已处理</span>
+        render: (value, record) => {
+          let obj = {
+            children: <span className="unable">标记为已处理</span>,
+            props: {},
+          };
+          if (record.index == 0) {
+            obj.props.rowSpan = record.devLen;
+          } else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        }
       },
       {
         title: '',
         dataIndex: 'wrongWarning',
         key: 'wrongWarning',
-        render: (value, record) => <span className="unable">标记为误警告</span>
+        render: (value, record) => {
+          let obj = {
+            children: <span className="unable">标记为误警告</span>,
+            props: {},
+          };
+          if (record.index == 0) {
+            obj.props.rowSpan = record.devLen;
+          } else {
+            obj.props.rowSpan = 0;
+          }
+          return obj;
+        }
       }
     ];
     return (
@@ -274,7 +398,18 @@ export default class extends PureComponent {
           dataSource={this.state.detailData}
           bordered
         ></Table>
-        {this.state.isShowPic && <img className="device-img" src={this.state.imgUrl} alt="设备图片"></img>}
+        {this.state.isShowPic && (
+          <div>
+            {
+              this.state.imgUrls.map((img) => (
+                <div className="device-img-item">
+                  <Zmage className="device-img" src={img.url} alt={img.desc} />
+                  <div className="device-img-desc">{img.desc}</div>
+                </div>
+              ))
+            }
+          </div>
+        )}
       </Modal>
     )
   }
@@ -442,6 +577,7 @@ export default class extends PureComponent {
           pagination={{
             current: this.state.pageOffset,
             total: this.state.totalPages*10,
+            pageSize: 10,
             onChange: (page) => {
               this.setState({
                 pageOffset: page,

@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react'
-import {Table, Modal} from 'antd'
+import {Table, Modal, message} from 'antd'
+import Zmage from 'react-zmage'
 import './index.css'
 
 export default class extends React.Component {
@@ -10,7 +11,7 @@ export default class extends React.Component {
       isShowDetail: false,
       detailData: [],
       isShowPic: false,
-      imgUrls: '',
+      imgUrls: [],
       currentWarningsData: [],
       pageOffset: 1,
       totalPages: 0,
@@ -63,161 +64,272 @@ export default class extends React.Component {
   }
 
   showDetail(id) {
-    fetch(`../jsons/getCurrentSameWarnings?ruleId=${id}`, {
+    fetch(`../jsons/getCurrentSameWarnings.json?ruleId=${id}`, {
       method: 'GET',
     }).then(response => response.json())
-    .then(response => {
-
+    .then(async response => {
+      const {pageData} = response.data;
+      const data = await Promise.all(
+        pageData.map(async (warning, index) => {
+          let res = {};
+          res.warningId = warning.warningId;
+          res.seq = index + 1;
+          res.time = warning.occurTime;
+          const devicesInfo = warning.rulebaseByRulebaseId.ruleitemsByRulebaseId;
+          const deviceIdsSet = new Set();
+          for (let item of devicesInfo) {
+            deviceIdsSet.add(item.unitId1);
+            deviceIdsSet.add(item.unitId2);
+          }
+          const deviceIds = [...deviceIdsSet];
+          const promises = deviceIds.map((id) => fetch(`../jsons/getUnitDetail.json?unitId=${id}`, {
+            method: 'GET',
+          })
+            .then(response => response.json())
+            .then(response => {
+              const {pageData} = response.data;
+              return {
+                devId: pageData.unitId,
+                devName: pageData.deviceByDeviceId.deviceName,
+                devType: pageData.category,
+                shelf: pageData.deviceByDeviceId.partByPartId.shelfByShelfId.shelfName,
+                status: pageData.enabled == 1 ? '开' : '关',
+              }
+            })
+          );
+          res.devices = await Promise.all(promises)
+          return res;
+        })
+      )
+      return data;
+    }).then(data => {
+      let res = [];
+      let isHandledObj = {};
+      data.forEach((item, itemIndex) => {
+        isHandledObj[item.warningId] = false;
+        let devices = item.devices.map((dev, index) => {
+          return Object.assign(dev, {
+            seq: itemIndex + 1,
+            index: index,
+            time: item.time,
+            // 警告的id
+            warningId: item.warningId,
+            devLen: item.devices.length,
+          })
+        });
+        res = res.concat(devices);
+      });
+      this.setState({
+        isShowDetail: true,
+        detailData: res,
+        isHandledObj,
+      })
     })
     // detialData是获取的
-    const data1 = [
-      {
-        warningId: 1,
-        seq: '1',
-        devices: [
-          {
-            devId: '10',
-            devName: '设备1',
-            devType: '类型1',
-            shelf: '屏柜1',
-            status: '开',
-          },
-          {
-            devId: '12',
-            devName: '设备2',
-            devType: '类型2',
-            shelf: '屏柜2',
-            status: '关',
-          }
-        ],
-        time: '2019-10-30 18:00:44',
-      }
-    ];
-    const data2 = [
-      {
-        warningId: 2,
-        seq: '1',
-        devices: [
-          {
-            devId: '11',
-            devName: '设备1',
-            devType: '类型1',
-            shelf: '屏柜1',
-            status: '开',
-          }
-        ],
-        time: '2019-10-20 18:00:19',
-      }
-    ];
-    const data3 = [
-      {
-        warningId: 3,
-        seq: '1',
-        devices: [
-          {
-            devId: '11',
-            devName: '设备1',
-            devType: '类型1',
-            shelf: '屏柜1',
-            status: '开',
-          }
-        ],
-        time: '2019-10-20 18:00:19',
-      }, 
-      {
-        warningId: 4,
-        seq: '2',
-        devices: [
-          {
-            devId: '12',
-            devName: '设备2',
-            devType: '类型2',
-            shelf: '屏柜2',
-            status: '开',
-          }
-        ],
-        time: '2019-10-20 18:00:20',
-      },
-      {
-        warningId: 5,
-        seq: '3',
-        devices: [
-          {
-            devId: '13',
-            devName: '设备3',
-            devType: '类型3',
-            shelf: '屏柜3',
-            status: '关',
-          }
-        ],
-        time: '2019-10-20 18:00:30',
-      }
-    ]
-    let data = null;
-    switch(id) {
-      case 1:
-        data = data3;
-        break;
-      case 2:
-        data = data1;
-        break;
-      case 3:
-        data = data3;
-        break;
-      default:
-        break;
-    }
-    let res = [];
-    let isHandledObj = {};
-    data.forEach((item, itemIndex) => {
-      isHandledObj[item.warningId] = false;
-      let devices = item.devices.map((dev, index) => {
-        return Object.assign(dev, {
-          seq: itemIndex + 1,
-          index: index,
-          time: item.time,
-          // 警告的id
-          warningId: item.warningId,
-          devLen: item.devices.length,
-        })
-      });
-      res = res.concat(devices);
-    });
-    this.setState({
-      isShowDetail: true,
-      detailData: res,
-      isHandledObj,
-    })
+    // const data1 = [
+    //   {
+    //     warningId: 1,
+    //     seq: '1',
+    //     devices: [
+    //       {
+    //         devId: '10',
+    //         devName: '设备1',
+    //         devType: '类型1',
+    //         shelf: '屏柜1',
+    //         status: '开',
+    //       },
+    //       {
+    //         devId: '12',
+    //         devName: '设备2',
+    //         devType: '类型2',
+    //         shelf: '屏柜2',
+    //         status: '关',
+    //       }
+    //     ],
+    //     time: '2019-10-30 18:00:44',
+    //   }
+    // ];
+    // const data2 = [
+    //   {
+    //     warningId: 2,
+    //     seq: '1',
+    //     devices: [
+    //       {
+    //         devId: '11',
+    //         devName: '设备1',
+    //         devType: '类型1',
+    //         shelf: '屏柜1',
+    //         status: '开',
+    //       }
+    //     ],
+    //     time: '2019-10-20 18:00:19',
+    //   }
+    // ];
+    // const data3 = [
+    //   {
+    //     warningId: 3,
+    //     seq: '1',
+    //     devices: [
+    //       {
+    //         devId: '11',
+    //         devName: '设备1',
+    //         devType: '类型1',
+    //         shelf: '屏柜1',
+    //         status: '开',
+    //       }
+    //     ],
+    //     time: '2019-10-20 18:00:19',
+    //   }, 
+    //   {
+    //     warningId: 4,
+    //     seq: '2',
+    //     devices: [
+    //       {
+    //         devId: '12',
+    //         devName: '设备2',
+    //         devType: '类型2',
+    //         shelf: '屏柜2',
+    //         status: '开',
+    //       }
+    //     ],
+    //     time: '2019-10-20 18:00:20',
+    //   },
+    //   {
+    //     warningId: 5,
+    //     seq: '3',
+    //     devices: [
+    //       {
+    //         devId: '13',
+    //         devName: '设备3',
+    //         devType: '类型3',
+    //         shelf: '屏柜3',
+    //         status: '关',
+    //       }
+    //     ],
+    //     time: '2019-10-20 18:00:30',
+    //   }
+    // ]
+    // let data = null;
+    // switch(id) {
+    //   case 1:
+    //     data = data3;
+    //     break;
+    //   case 2:
+    //     data = data1;
+    //     break;
+    //   case 3:
+    //     data = data3;
+    //     break;
+    //   default:
+    //     break;
+    // }
+    // let res = [];
+    // let isHandledObj = {};
+    // data.forEach((item, itemIndex) => {
+    //   isHandledObj[item.warningId] = false;
+    //   let devices = item.devices.map((dev, index) => {
+    //     return Object.assign(dev, {
+    //       seq: itemIndex + 1,
+    //       index: index,
+    //       time: item.time,
+    //       // 警告的id
+    //       warningId: item.warningId,
+    //       devLen: item.devices.length,
+    //     })
+    //   });
+    //   res = res.concat(devices);
+    // });
+    // this.setState({
+    //   isShowDetail: true,
+    //   detailData: res,
+    //   isHandledObj,
+    // })
   }
 
-  showPic(warningId) {
+  async showPic(warningId) {
+    const {detailData} = this.state;
+    const devIds = [];
+    detailData.forEach(item => {
+      if (item.warningId == warningId) {
+        devIds.push({
+          devId: item.devId,
+          devName: item.devName,
+        });
+      }
+    })
+    const imgUrls = await Promise.all(
+      devIds.map(dev => 
+        fetch(`../jsons/getDeviceImg.json?warningId=${dev.warningId}&unitId=${dev.devId}`, {
+          method: 'GET',
+        }).then(response => response.json())
+        .then(response => {
+          return {
+            url: response.data.pageData,
+            desc: dev.devName,
+          }
+        })
+      )
+    )
     // 需要改
     this.setState({
-      imgUrls: warningId == '1' ? [require('../../imgs/11.png'), require('../../imgs/10.png')] : [require('../../imgs/11.png')],
+      imgUrls: imgUrls,
       isShowPic: true,
     });
     console.log('show pic')
   }
 
   handleWarning(warningId) {
-    const {isHandledObj} = this.state;
-    let newObj = isHandledObj;
-    newObj[warningId] = true;
-    this.setState({
-      isHandledObj: newObj,
+    const storage = window.sessionStorage;
+    const userId = storage.getItem('userId');
+    let form = new FormData();
+    form.append("warningId", warningId);
+    form.append("usrId", userId);
+    form.append("type", "TP");
+    fetch('../jsons/handleWarning.json', {
+      method: 'POST',
+      body: form,
+    }).then(response => response.json())
+    .then(response => {
+      if (response.message == 'success') {
+        message.success('处理成功');
+        const {isHandledObj} = this.state;
+        let newObj = isHandledObj;
+        newObj[warningId] = true;
+        this.setState({
+          isHandledObj: newObj,
+        })
+      } else {
+        message.error('处理失败')
+      }
     })
-    console.log(newObj)
-    console.log(warningId)
+    console.log('handle warning');
   }
 
   wrongWarning(warningId) {
-    const {isHandledObj} = this.state;
-    let newObj = isHandledObj;
-    newObj[warningId] = true;
-    this.setState({
-      isHandledObj: newObj,
+    const storage = window.sessionStorage;
+    const userId = storage.getItem('userId');
+    let form = new FormData();
+    form.append("warningId", warningId);
+    form.append("usrId", userId);
+    form.append("type", "FP");
+    fetch('../jsons/handleWarning.json', {
+      method: 'POST',
+      body: form,
+    }).then(response => response.json())
+    .then(response => {
+      if (response.message == 'success') {
+        message.success('标为误告警成功');
+        const {isHandledObj} = this.state;
+        let newObj = isHandledObj;
+        newObj[warningId] = true;
+        this.setState({
+          isHandledObj: newObj,
+        })
+      } else {
+        message.error('标为误告警失败');
+      }
     })
-    console.log(warningId)
+    console.log('wrong warning');
   }
 
   renderDetail() {
@@ -340,18 +452,10 @@ export default class extends React.Component {
         okText="确认"
         cancelText="取消"
         onOk={() => {
-          this.setState({
-            isShowDetail: false,
-            isShowPic: false,
-            isHandledObj: {},
-          })
+          window.location.reload();
         }}
         onCancel={() => {
-          this.setState({
-            isShowDetail: false,
-            isShowPic: false,
-            isHandledObj: {},
-          })
+          window.location.reload();
         }}
       >
         <Table
@@ -362,8 +466,11 @@ export default class extends React.Component {
         {this.state.isShowPic ? (
           <div>
             {
-              this.state.imgUrls.map((url) => (
-                <img className="device-img" src={url} alt="设备图片"></img>
+              this.state.imgUrls.map((img) => (
+                <div className="device-img-item">
+                  <Zmage className="device-img" src={img.url} alt={img.desc} />
+                  <div className="device-img-desc">{img.desc}</div>
+                </div>
               ))
             }
           </div>
@@ -453,6 +560,7 @@ export default class extends React.Component {
           pagination={{
             current: this.state.pageOffset,
             total: this.state.totalPages*10,
+            pageSize: 10,
             onChange: (page) => {
               this.setState({
                 pageOffset: page,

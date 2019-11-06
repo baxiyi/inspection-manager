@@ -1,7 +1,8 @@
 import React, {PureComponent} from 'react'
-import {Icon, Button, Modal, DatePicker, TimePicker, message, Popover} from 'antd'
+import {Icon, Button, Modal, DatePicker, TimePicker, message, Popover, Pagination} from 'antd'
 import './index.css'
 import moment from 'moment';
+import Zmage from 'react-zmage'
 
 export default class extends PureComponent {
 
@@ -10,13 +11,16 @@ export default class extends PureComponent {
     this.state = {
       isShowDetail: false,
       cameraNum: 1,
-      curCameraNum: 0,
+      curShelfId: 0,
       detailData: null,
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       shevesList: [],
       maxRow: 0,
       maxCow: 0,
+      // 分页相关
+      pageOffset: 1,
+      totalPages: 1,
     }
   }
 
@@ -36,34 +40,90 @@ export default class extends PureComponent {
     })
   }
 
+  formatDate (date, fmt) {
+    var o = {
+        "M+": date.getMonth() + 1, //月份 
+        "d+": date.getDate(), //日 
+        "h+": date.getHours(), //小时 
+        "m+": date.getMinutes(), //分 
+        "s+": date.getSeconds(), //秒 
+        "q+": Math.floor((date.getMonth() + 3) / 3), //季度 
+        "S": date.getMilliseconds() //毫秒 
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+  }
+
   getOneHourBefore() {
     const now = new Date();
     return new Date(now.getTime() - 60*60*1000)
   }
 
-  showDetail(num) {
-    this.setState({
-      curCameraNum: num,
-      isShowDetail: true,
-      // 需要改
-      detailData: {
-        ipAddress: '1.1.1.1',
-        imgUrls: [
-          {
-            url: require('../../imgs/camera1.png'),
-            time: '2019-10-10 14:30:22',
-          },
-          {
-            url: require('../../imgs/camera2.png'),
-            time: '2019-10-20 13:00:34',
-          }
-        ]
-      }
+  showDetail(shelfId) {
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    const {cameraNum} = this.state;
+    const {pageOffset} = this.state;
+    fetch(`../jsons/getShelfDetail.json?shelfId=${shelfId}&cameraNum=${cameraNum}
+    &startTime=${startTime}&endTime=${endTime}&page=${pageOffset}&size=4`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      const {totalPages} = response.data;
+      const {pageData} = response.data;
+      const detailData = {
+        ipAddress: pageData.ipAddress,
+        imgUrls: pageData.images,
+      };
+      this.setState({
+        detailData,
+        curShelfId: shelfId,
+        isShowDetail: true,
+        totalPages,
+      })
     })
+    // this.setState({
+    //   curShelfId: shelfId,
+    //   isShowDetail: true,
+    //   // 需要改
+    //   // detailData: {
+    //   //   ipAddress: '1.1.1.1',
+    //   //   imgUrls: [
+    //   //     {
+    //   //       url: require('../../imgs/camera1.png'),
+    //   //       time: '2019-10-10 14:30:22',
+    //   //     },
+    //   //     {
+    //   //       url: require('../../imgs/camera2.png'),
+    //   //       time: '2019-10-20 13:00:34',
+    //   //     },
+    //   //     {
+    //   //       url: require('../../imgs/camera1.png'),
+    //   //       time: '2019-10-10 14:30:22',
+    //   //     },
+    //   //     {
+    //   //       url: require('../../imgs/camera1.png'),
+    //   //       time: '2019-10-10 14:30:22',
+    //   //     },
+    //   //   ]
+    //   // }
+    // })
   }
 
   toggleCamera() {
     console.log('toggle');
+    const {cameraNum} = this.state;
+    if (cameraNum == 1) {
+      this.setState({
+        cameraNum: 2,
+      }, () => this.updateImages())
+    } else {
+      this.setState({
+        cameraNum: 1,
+      }, () => this.updateImages())
+    }
   }
 
   changeDateRange() {
@@ -77,12 +137,34 @@ export default class extends PureComponent {
     }
     if (start.getTime() > now.getTime() || end.getTime() > now.getTime()) {
       message.error('开始时间和结束时间均须在当前时间之前');
+      return;
     }
     this.updateImages();
   }
 
   updateImages() {
     console.log('update');
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    const {cameraNum} = this.state;
+    const {pageOffset} = this.state;
+    const {curShelfId} = this.state;
+    fetch(`../jsons/getShelfDetail.json?shelfId=${curShelfId}&cameraNum=${cameraNum}
+    &startTime=${startTime}&endTime=${endTime}&page=${pageOffset}&size=4`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      const {totalPages} = response.data;
+      const {pageData} = response.data;
+      const detailData = {
+        ipAddress: pageData.ipAddress,
+        imgUrls: pageData.images,
+      };
+      this.setState({
+        detailData,
+        totalPages,
+      })
+    })
   }
 
   renderCamera(camera) {
@@ -111,19 +193,15 @@ export default class extends PureComponent {
     return this.state.isShowDetail && (
       <Modal
         visible={this.state.isShowDetail}
-        title={this.state.curCameraNum + '号屏柜详情'}
+        title={this.state.curShelfId + '号屏柜详情'}
         width="60%"
         okText="确认"
         cancelText="取消"
         onOk={() => {
-          this.setState({
-            isShowDetail: false,
-          })
+          window.location.reload()
         }}
         onCancel={() => {
-          this.setState({
-            isShowDetail: false,
-          })
+          window.location.reload()
         }}
       >
         <div className="camera-infor">
@@ -211,12 +289,22 @@ export default class extends PureComponent {
             {
               this.state.detailData.imgUrls.map(img => (
                 <div className="shelf-img" >
-                  <img src={img.url} alt="屏柜图片"/>
+                  <Zmage src={img.url} alt="屏柜图片" className="shelf-image"/>
                   <div className="img-desc">{img.time}</div>
                 </div>
               ))
             }
           </div>
+          <Pagination
+              current={this.state.pageOffset}
+              total={this.state.totalPages*4}
+              pageSize={4}
+              onChange={(page) => {
+                this.setState({
+                  pageOffset: page,
+                }, () => this.updateImages())
+              }}
+            ></Pagination>
         </div>
       </Modal>
     )

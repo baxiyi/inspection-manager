@@ -39,13 +39,6 @@
               },
               "usrByUsrId": null,
               "state": null
-          },
-          {
-              "warningId": 2,
-              "occurTime": "2019-09-20 14:12:59",
-              "rulebaseByRulebaseId": 2,
-              "usrByUsrId": null,
-              "state": null
           }
       ]
   }
