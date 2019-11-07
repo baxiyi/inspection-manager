@@ -10,8 +10,6 @@ export default class extends React.Component {
     this.state = {
       isShowDetail: false,
       detailData: [],
-      isShowPic: false,
-      imgUrls: [],
       currentWarningsData: [],
       pageOffset: 1,
       totalPages: 0,
@@ -69,12 +67,16 @@ export default class extends React.Component {
     }).then(response => response.json())
     .then(async response => {
       const {pageData} = response.data;
+      let isHandledObj = {};
       const data = await Promise.all(
         pageData.map(async (warning, index) => {
+          isHandledObj[warning.warningId] = false;
           let res = {};
           res.warningId = warning.warningId;
           res.seq = index + 1;
           res.time = warning.occurTime;
+          res.isShowPic = false;
+          res.imgUrls = [];
           const devicesInfo = warning.rulebaseByRulebaseId.ruleitemsByRulebaseId;
           const deviceIdsSet = new Set();
           for (let item of devicesInfo) {
@@ -101,30 +103,35 @@ export default class extends React.Component {
           return res;
         })
       )
-      return data;
-    }).then(data => {
-      let res = [];
-      let isHandledObj = {};
-      data.forEach((item, itemIndex) => {
-        isHandledObj[item.warningId] = false;
-        let devices = item.devices.map((dev, index) => {
-          return Object.assign(dev, {
-            seq: itemIndex + 1,
-            index: index,
-            time: item.time,
-            // 警告的id
-            warningId: item.warningId,
-            devLen: item.devices.length,
-          })
-        });
-        res = res.concat(devices);
-      });
       this.setState({
         isShowDetail: true,
-        detailData: res,
+        detailData: data,
         isHandledObj,
       })
     })
+    //.then(data => {
+    //   let res = [];
+    //   let isHandledObj = {};
+    //   data.forEach((item, itemIndex) => {
+    //     isHandledObj[item.warningId] = false;
+    //     let devices = item.devices.map((dev, index) => {
+    //       return Object.assign(dev, {
+    //         seq: itemIndex + 1,
+    //         index: index,
+    //         time: item.time,
+    //         // 警告的id
+    //         warningId: item.warningId,
+    //         devLen: item.devices.length,
+    //       })
+    //     });
+    //     res = res.concat(devices);
+    //   });
+    //   this.setState({
+    //     isShowDetail: true,
+    //     detailData: res,
+    //     isHandledObj,
+    //   })
+    // })
     // detialData是获取的
     // const data1 = [
     //   {
@@ -248,33 +255,52 @@ export default class extends React.Component {
 
   async showPic(warningId) {
     const {detailData} = this.state;
-    const devIds = [];
-    detailData.forEach(item => {
+    let warning = null;
+    for (let item of detailData) {
       if (item.warningId == warningId) {
-        devIds.push({
-          devId: item.devId,
-          devName: item.devName,
-        });
+        warning = item;
+        break;
       }
-    })
-    const imgUrls = await Promise.all(
-      devIds.map(dev => 
-        fetch(`../jsons/getDeviceImg.json?warningId=${dev.warningId}&unitId=${dev.devId}`, {
-          method: 'GET',
-        }).then(response => response.json())
-        .then(response => {
-          return {
-            url: response.data.pageData,
-            desc: dev.devName,
-          }
-        })
+    }
+    if (warning === null){
+      return;
+    }
+    if (!warning.isShowPic) {
+      const id = warning.warningId;
+      const imgUrls = await Promise.all(
+        warning.devices.map(dev => 
+          fetch(`../jsons/getDeviceImg.json?warningId=${id}&unitId=${dev.devId}`, {
+            method: 'GET',
+          }).then(response => response.json())
+          .then(response => {
+            return {
+              url: response.data.pageData,
+              desc: dev.devName,
+            }
+          })
+        )
       )
-    )
-    // 需要改
-    this.setState({
-      imgUrls: imgUrls,
-      isShowPic: true,
-    });
+      
+      for (let item of detailData) {
+        if (item.warningId == warningId) {
+          item.isShowPic = true;
+          item.imgUrls = imgUrls;
+        }
+      }
+      // 需要改
+      this.setState({
+        detailData,
+      });
+    } else {
+      for (let item of detailData) {
+        if (item.warningId == warningId) {
+          item.isShowPic = false;
+        }
+      }
+      this.setState({
+        detailData,
+      })
+    }
     console.log('show pic')
   }
 
@@ -394,7 +420,7 @@ export default class extends React.Component {
         key: 'imgUrl',
         render: (value, record) => {
           let obj = {
-            children: (<a onClick={id => this.showPic(record.warningId)}>查看图像</a>),
+            children: (<a onClick={id => this.showPic(record.warningId)}>{record.isShowPic ? '收起图片' : '查看图片 '}</a>),
             props: {},
           };
           if (record.index == 0) {
@@ -458,7 +484,46 @@ export default class extends React.Component {
           window.location.reload();
         }}
       >
-        <Table
+        {
+          this.state.detailData.map((data, index) => {
+            let devices = data.devices.map((dev, devIndex) => {
+              return Object.assign(dev, {
+                seq: index + 1,
+                index: devIndex,
+                time: data.time,
+                isShowPic: data.isShowPic,
+                warningId: data.warningId,
+                devLen: data.devices.length,
+              })
+            });
+            return (
+              <div>
+                <Table
+                  columns={columns}
+                  dataSource={devices}
+                  bordered
+                  // showHeader={index == 0 ? true : false}
+                  pagination={false}
+                ></Table>
+                {
+                  data.isShowPic ? (
+                    <div className="images">
+                      {
+                        data.imgUrls.map((img) => (
+                          <div className="device-img-item">
+                            <Zmage className="device-img" src={require('../../imgs/10.png')} alt={img.desc} />
+                            <div className="device-img-desc">{img.desc}</div>
+                          </div>
+                        ))
+                      }
+                    </div>
+                  ) : null
+                }
+              </div>
+            )
+          })
+        }
+        {/* <Table
           columns={columns}
           dataSource={this.state.detailData}
           bordered
@@ -474,7 +539,7 @@ export default class extends React.Component {
               ))
             }
           </div>
-        ) : null}
+        ) : null} */}
       </Modal>
     )
   }
