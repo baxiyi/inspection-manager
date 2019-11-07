@@ -16,6 +16,14 @@ class Login extends PureComponent {
   login(e) {
     e.preventDefault();
     console.log('login');
+    if (this.state.userId.trim().length === 0) {
+      message.error('用户名不能为空');
+      return;
+    }
+    if (this.state.password.trim().length === 0) {
+      message.error('密码不能为空');
+      return;
+    }
     message.info('登录成功');
     let storage = window.sessionStorage;
     storage.setItem('isLogin', "true");
@@ -27,6 +35,14 @@ class Login extends PureComponent {
   register(e) {
     e.preventDefault();
     console.log('register');
+    if (this.state.userId.trim().length === 0) {
+      message.error('用户名不能为空');
+      return;
+    }
+    if (this.state.password.trim().length === 0) {
+      message.error('密码不能为空');
+      return;
+    }
     message.info('注册成功')
     this.setState({
       isLoginPage: true,
