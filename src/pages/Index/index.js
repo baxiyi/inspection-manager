@@ -511,7 +511,7 @@ export default class extends React.Component {
                       {
                         data.imgUrls.map((img) => (
                           <div className="device-img-item">
-                            <Zmage className="device-img" src={require('../../imgs/10.png')} alt={img.desc} />
+                            <Zmage className="device-img" src={img.url} alt={img.desc} />
                             <div className="device-img-desc">{img.desc}</div>
                           </div>
                         ))
