@@ -135,29 +135,26 @@ export default class extends PureComponent {
       res.warningId = warning.warningId;
       res.seq = 1;
       res.time = warning.occurTime;
-      const devicesInfo = warning.rulebaseByRulebaseId.ruleitemsByRulebaseId;
-      const deviceIdsSet = new Set();
-      for (let item of devicesInfo) {
-        deviceIdsSet.add(item.unitId1);
-        deviceIdsSet.add(item.unitId2);
-      }
-      const deviceIds = [...deviceIdsSet];
-      const promises = deviceIds.map((id) => fetch(`../jsons/getUnitDetail.json?unitId=${id}`, {
-        method: 'GET',
-      })
+      await fetch(`../jsons/getWarningDetail.json?warningId=${warning.warningId}`)
         .then(response => response.json())
         .then(response => {
           const {pageData} = response.data;
-          return {
-            devId: pageData.unitId,
-            devName: pageData.deviceByDeviceId.deviceName,
-            devType: pageData.category,
-            shelf: pageData.deviceByDeviceId.partByPartId.shelfByShelfId.shelfName,
-            status: pageData.enabled == 1 ? '开' : '关',
-          }
+          res.devices = pageData.unitStatuses.map((dev, index) => {
+            let obj = {};
+            if (dev.currentStatus.indexOf('b') !== -1) {
+              const temp = dev.currentStatus.match(/b\((.)\)/);
+              obj.status = temp[1] == 1 ? '开' : '关';
+            } else {
+              const temp = dev.currentStatus.match(/i\((.)\)/);
+              obj.status = parseInt(temp[1]);
+            }
+            obj.devId = dev.unitByUnitId.unitId;
+            obj.devName = dev.unitByUnitId.deviceByDeviceId.deviceName;
+            obj.devType = dev.unitByUnitId.category;
+            obj.shelf = dev.unitByUnitId.deviceByDeviceId.partByPartId.shelfByShelfId.shelfName;
+            return obj;
+          })
         })
-      );
-      res.devices = await Promise.all(promises)
       return res;
     }).then(data => {
         let devices = data.devices.map((dev, index) => {

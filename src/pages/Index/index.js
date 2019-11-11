@@ -70,36 +70,34 @@ export default class extends React.Component {
       let isHandledObj = {};
       const data = await Promise.all(
         pageData.map(async (warning, index) => {
-          isHandledObj[warning.warningId] = false;
+          const warningId = warning.warningId;
+          isHandledObj[warningId] = false;
           let res = {};
-          res.warningId = warning.warningId;
+          res.warningId = warningId;
           res.seq = index + 1;
           res.time = warning.occurTime;
           res.isShowPic = false;
           res.imgUrls = [];
-          const devicesInfo = warning.rulebaseByRulebaseId.ruleitemsByRulebaseId;
-          const deviceIdsSet = new Set();
-          for (let item of devicesInfo) {
-            deviceIdsSet.add(item.unitId1);
-            deviceIdsSet.add(item.unitId2);
-          }
-          const deviceIds = [...deviceIdsSet];
-          const promises = deviceIds.map((id) => fetch(`../jsons/getUnitDetail.json?unitId=${id}`, {
-            method: 'GET',
-          })
+          await fetch(`../jsons/getWarningDetail.json?warningId=${warningId}`)
             .then(response => response.json())
             .then(response => {
               const {pageData} = response.data;
-              return {
-                devId: pageData.unitId,
-                devName: pageData.deviceByDeviceId.deviceName,
-                devType: pageData.category,
-                shelf: pageData.deviceByDeviceId.partByPartId.shelfByShelfId.shelfName,
-                status: pageData.enabled == 1 ? '开' : '关',
-              }
+              res.devices = pageData.unitStatuses.map((dev, index) => {
+                let obj = {};
+                if (dev.currentStatus.indexOf('b') !== -1) {
+                  const temp = dev.currentStatus.match(/b\((.)\)/);
+                  obj.status = temp[1] == 1 ? '开' : '关';
+                } else {
+                  const temp = dev.currentStatus.match(/i\((.)\)/);
+                  obj.status = parseInt(temp[1]);
+                }
+                obj.devId = dev.unitByUnitId.unitId;
+                obj.devName = dev.unitByUnitId.deviceByDeviceId.deviceName;
+                obj.devType = dev.unitByUnitId.category;
+                obj.shelf = dev.unitByUnitId.deviceByDeviceId.partByPartId.shelfByShelfId.shelfName;
+                return obj;
+              })
             })
-          );
-          res.devices = await Promise.all(promises)
           return res;
         })
       )

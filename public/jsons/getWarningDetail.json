@@ -1,47 +1,123 @@
 {
-  "code": 0,
-  "data": {
-      "totalPages": 0,
-      "pageSize": 0,
-      "pageNumber": 0,
-      "paged": false,
-      "pageData": {
-          "warningId": 1,
-          "occurTime": "2019-09-20 14:12:59",
-          "rulebaseByRulebaseId": {
-              "rulebaseId": 1,
-              "warningInfo": "3号屏柜1号主变装置指示灯显示出现错误",
-              "importance": 1,
-              "ruleitemsByRulebaseId": [
-                  {
-                      "ruleitemId": 1,
-                      "unitId1": 310101,
-                      "unitId2": 310102,
-                      "relation": "ineq",
-                      "rulebaseByRulebaseId": 1
-                  },
-                  {
-                      "ruleitemId": 2,
-                      "unitId1": 310101,
-                      "unitId2": 310103,
-                      "relation": "ineq",
-                      "rulebaseByRulebaseId": 1
-                  },
-                  {
-                      "ruleitemId": 3,
-                      "unitId1": 310101,
-                      "unitId2": 310104,
-                      "relation": "eq",
-                      "rulebaseByRulebaseId": 1
-                  }
-              ]
-          },
-          "usrByUsrId": {
-              "usrId": 21717013,
-              "usrName": "mao",
-              "usrPrivilege": 1
-          },
-          "state": 1
-      }
-  }
+    "code": 0,
+    "data": {
+        "totalPages": 0,
+        "pageSize": 0,
+        "pageNumber": 0,
+        "paged": false,
+        "pageData": {
+            "warningId": 1,
+            "occurTime": 1568959979000,
+            "warningInfo": "3号屏柜1号主变装置指示灯显示出现错误",
+            "usrByUsrId": {
+                "usrId": 21717013,
+                "usrName": "mao",
+                "usrPrivilege": 1
+            },
+            "state": 1,
+            "unitStatuses": [
+                {
+                    "currentStatus": "b(1)",
+                    "unitByUnitId": {
+                        "unitId": 310101,
+                        "category": "small-lamp",
+                        "meaning": "第一组1母电压",
+                        "validStatus": "b(1)",
+                        "enabled": 1,
+                        "deviceByDeviceId": {
+                            "deviceId": 3101,
+                            "deviceName": "1号主变装置",
+                            "partByPartId": {
+                                "partId": 31,
+                                "partSeq": 1,
+                                "camera": "192.0.0.31",
+                                "shelfByShelfId": {
+                                    "shelfId": 3,
+                                    "shelfName": "1号主变测控屏",
+                                    "partNum": 1
+                                }
+                            },
+                            "lineByLineId": null
+                        }
+                    }
+                },
+                {
+                    "currentStatus": "b(0)",
+                    "unitByUnitId": {
+                        "unitId": 310102,
+                        "category": "small-lamp",
+                        "meaning": "第二组1母电压",
+                        "validStatus": "b(0)",
+                        "enabled": 1,
+                        "deviceByDeviceId": {
+                            "deviceId": 3101,
+                            "deviceName": "1号主变装置",
+                            "partByPartId": {
+                                "partId": 31,
+                                "partSeq": 1,
+                                "camera": "192.0.0.31",
+                                "shelfByShelfId": {
+                                    "shelfId": 3,
+                                    "shelfName": "1号主变测控屏",
+                                    "partNum": 1
+                                }
+                            },
+                            "lineByLineId": null
+                        }
+                    }
+                },
+                {
+                    "currentStatus": "b(1)",
+                    "unitByUnitId": {
+                        "unitId": 310103,
+                        "category": "small-lamp",
+                        "meaning": "第三组1母电压",
+                        "validStatus": "b(0)",
+                        "enabled": 1,
+                        "deviceByDeviceId": {
+                            "deviceId": 3101,
+                            "deviceName": "1号主变装置",
+                            "partByPartId": {
+                                "partId": 31,
+                                "partSeq": 1,
+                                "camera": "192.0.0.31",
+                                "shelfByShelfId": {
+                                    "shelfId": 3,
+                                    "shelfName": "1号主变测控屏",
+                                    "partNum": 1
+                                }
+                            },
+                            "lineByLineId": null
+                        }
+                    }
+                },
+                {
+                    "currentStatus": "b(0)",
+                    "unitByUnitId": {
+                        "unitId": 310104,
+                        "category": "small-lamp",
+                        "meaning": "第四组1母电压",
+                        "validStatus": "b(0)",
+                        "enabled": 1,
+                        "deviceByDeviceId": {
+                            "deviceId": 3101,
+                            "deviceName": "1号主变装置",
+                            "partByPartId": {
+                                "partId": 31,
+                                "partSeq": 1,
+                                "camera": "192.0.0.31",
+                                "shelfByShelfId": {
+                                    "shelfId": 3,
+                                    "shelfName": "1号主变测控屏",
+                                    "partNum": 1
+                                }
+                            },
+                            "lineByLineId": null
+                        }
+                    }
+                }
+            ],
+            "occureTime": "2019-09-20 14:12:59"
+        }
+    }
 }
