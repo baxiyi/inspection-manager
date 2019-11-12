@@ -86,7 +86,8 @@ class Login extends PureComponent {
                   登录
                 </Button>
                 <div>
-                  暂无账号? <a onClick={() => {
+                  <span className="notice">暂无账号?</span> <a className="register-link"
+                    onClick={() => {
                     this.setState({
                       isLoginPage: false,
                     })
