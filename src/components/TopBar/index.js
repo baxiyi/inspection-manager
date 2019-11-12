@@ -23,7 +23,7 @@ class TopBar extends PureComponent {
       <div className="top-bar">
         <div className="title">
           <Icon type="home" style={{marginRight: 5}}/>
-          一键巡检系统
+          智能巡检系统
         </div>
         <div className="logout">
           <span className="userid">用户: {userId}</span>

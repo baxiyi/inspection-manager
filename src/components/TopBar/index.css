@@ -1,13 +1,14 @@
 .top-bar {
   top: 0;
-  height: 50px;
+  height: 60px;
   width: 100%;
   background-color: black;
   position: relative;
 }
 .title {
   color: 	#F5F5F5;
-  font-size: 15px;
+  /* font-size: 15px; */
+  font-size: 18px;
   letter-spacing: 0.5px;
   width: 150px;
   text-align: center;
@@ -24,6 +25,7 @@
   top: 20px;
   text-align: right;
   letter-spacing: 1px;
+  font-size: 16px;
 }
 .userid {
   margin-right: 20px;

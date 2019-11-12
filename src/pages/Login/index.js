@@ -51,9 +51,10 @@ class Login extends PureComponent {
 
   render() {
     return (
-      <div className="login">
+      <div className="background">
+        <div className="login">
         <div className="login-title">
-          监控巡检系统
+          智能巡检系统
         </div>
         {
           this.state.isLoginPage ? (
@@ -81,7 +82,7 @@ class Login extends PureComponent {
                 />
               </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" className="form-button">
+                <Button type="primary" htmlType="submit" className="form-button" size="large">
                   登录
                 </Button>
                 <div>
@@ -120,7 +121,7 @@ class Login extends PureComponent {
                 />
               </Form.Item>
               <Form.Item>
-                <Button type="primary" htmlType="submit" className="form-button">
+                <Button type="primary" htmlType="submit" className="form-button" size="large">
                   注册
                 </Button>
               </Form.Item>
@@ -128,6 +129,8 @@ class Login extends PureComponent {
           )
         }
       </div>
+      </div>
+      
     )
   }
 }

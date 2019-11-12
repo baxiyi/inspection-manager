@@ -2,4 +2,8 @@
   height: auto;
   float: left;
   width: 250px;
+  font-size: 20px;
+}
+.ant-menu-item {
+  font-size: 16px !important;
 }

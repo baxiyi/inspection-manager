@@ -8,6 +8,7 @@ import Menu from '../components/Menu'
 import TopBar from '../components/TopBar'
 import Login from '../pages/Login'
 import {BrowserRouter, Route, Switch, Redirect} from 'react-router-dom'
+import './index.css'
 
 export default class extends PureComponent {
 

@@ -1,8 +1,19 @@
+/* .background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2000px;
+  background-image: url('../../imgs/bg.jpg');
+  background-size: 100% 100%;
+} */
 .login {
+  background-color: white;
   width: 400px;
   margin: auto;
 }
 .login-title {
+  font-family: Helvetica, Tahoma, Arial, "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei";
   font-size: 40px;
   letter-spacing: 5px;
   width: 400px;
@@ -15,4 +26,8 @@
 }
 .form-button {
   width: 100%;
+}
+.ant-input {
+  height: 40px !important;
+  margin: auto;
 }
