@@ -1,6 +1,7 @@
 import React, {PureComponent} from 'react'
 import {Form, Input, Icon, Button, message} from 'antd'
 import {withRouter} from 'react-router-dom'
+import {fetchJsonp} from 'fetch-jsonp'
 import './index.css'
 
 class Login extends PureComponent {
@@ -24,12 +25,24 @@ class Login extends PureComponent {
       message.error('密码不能为空');
       return;
     }
-    message.info('登录成功');
-    let storage = window.sessionStorage;
-    storage.setItem('isLogin', "true");
-    storage.setItem('userId', this.state.userId)
-    this.props.history.push('/');
-    window.location.reload();
+    fetch(`http://210.30.97.234:8080/WebElectric/getLogIn.json?UsrId=${this.state.userId}&UsrPassword=${this.state.password}`, {
+      method: 'GET',
+      mode: 'cors',
+    })
+    .then(response => response.json())
+    .then(response => {
+      if (response.data.pageData.login == '成功登陆') {
+        message.success('登录成功');
+        const userId = response.data.pageData.usrId;
+        let storage = window.sessionStorage;
+        storage.setItem('isLogin', "true");
+        storage.setItem('userId', userId);
+        this.props.history.push('/');
+        window.location.reload();
+      } else {
+        message.error(response.data.pageData.login);
+      }
+    })
   }
 
   register(e) {
@@ -43,6 +56,11 @@ class Login extends PureComponent {
       message.error('密码不能为空');
       return;
     }
+    // fetch(`http://210.30.97.234:8080/WebElectric/getLogIn.json?UsrId=${this.state.userId}&UsrPassword=${this.state.password}`)
+    // .then(response => response.json())
+    // .then(response => {
+    //   if (response.data.pageData.register="")
+    // })
     message.info('注册成功')
     this.setState({
       isLoginPage: true,

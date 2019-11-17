@@ -28,7 +28,7 @@
 .form-button {
   width: 100%;
 }
-.ant-input {
+.login .ant-input {
   height: 40px !important;
   margin: auto;
 }
