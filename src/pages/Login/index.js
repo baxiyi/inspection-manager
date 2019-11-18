@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react'
 import {Form, Input, Icon, Button, message} from 'antd'
 import {withRouter} from 'react-router-dom'
-import {fetchJsonp} from 'fetch-jsonp'
+import {HOST} from '../../config';
 import './index.css'
 
 class Login extends PureComponent {
@@ -25,7 +25,7 @@ class Login extends PureComponent {
       message.error('密码不能为空');
       return;
     }
-    fetch(`http://210.30.97.234:8080/WebElectric/getLogIn.json?UsrId=${this.state.userId}&UsrPassword=${this.state.password}`, {
+    fetch(`${HOST}/getLogIn.json?UsrId=${this.state.userId}&UsrPassword=${this.state.password}`, {
       method: 'GET',
       mode: 'cors',
     })

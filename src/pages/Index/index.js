@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react'
 import {Table, Modal, message} from 'antd'
 import Zmage from 'react-zmage'
 import './index.css'
+import { HOST } from '../../config';
 
 export default class extends React.Component {
   
@@ -62,7 +63,7 @@ export default class extends React.Component {
   }
 
   showDetail(id) {
-    fetch(`../jsons/getCurrentSameWarnings.json?ruleId=${id}`, {
+    fetch(`${HOST}/getCurrentSameWarnings.json?ruleId=${id}`, {
       method: 'GET',
     }).then(response => response.json())
     .then(async response => {
