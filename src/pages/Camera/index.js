@@ -3,6 +3,7 @@ import {Icon, Button, Modal, DatePicker, TimePicker, message, Popover, Paginatio
 import './index.css'
 import moment from 'moment';
 import Zmage from 'react-zmage'
+import { HOST } from '../../config';
 
 export default class extends PureComponent {
 
@@ -25,7 +26,7 @@ export default class extends PureComponent {
   }
 
   componentDidMount() {
-    fetch(`../jsons/getShelvesList.json`, {
+    fetch(`${HOST}/getShelvesList.json`, {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
@@ -66,7 +67,7 @@ export default class extends PureComponent {
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
     const {cameraNum} = this.state;
     const {pageOffset} = this.state;
-    fetch(`../jsons/getShelfDetail.json?shelfId=${shelfId}&cameraNum=${cameraNum}
+    fetch(`${HOST}/getShelfDetail.json?shelfId=${shelfId}&cameraNum=${cameraNum}
     &startTime=${startTime}&endTime=${endTime}&page=${pageOffset}&size=4`, {
       method: 'GET',
     }).then(response => response.json())
@@ -149,7 +150,7 @@ export default class extends PureComponent {
     const {cameraNum} = this.state;
     const {pageOffset} = this.state;
     const {curShelfId} = this.state;
-    fetch(`../jsons/getShelfDetail.json?shelfId=${curShelfId}&cameraNum=${cameraNum}
+    fetch(`${HOST}/getShelfDetail.json?shelfId=${curShelfId}&cameraNum=${cameraNum}
     &startTime=${startTime}&endTime=${endTime}&page=${pageOffset}&size=4`, {
       method: 'GET',
     }).then(response => response.json())

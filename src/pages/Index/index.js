@@ -18,7 +18,7 @@ export default class extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`../jsons/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
+    fetch(`${HOST}/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
@@ -40,7 +40,7 @@ export default class extends React.Component {
   }
 
   updateCurrentWarnings() {
-    fetch(`../jsons/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
+    fetch(`${HOST}/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
@@ -79,7 +79,7 @@ export default class extends React.Component {
           res.time = warning.occurTime;
           res.isShowPic = false;
           res.imgUrls = [];
-          await fetch(`../jsons/getWarningDetail.json?warningId=${warningId}`)
+          await fetch(`${HOST}/getWarningDetail.json?warningId=${warningId}`)
             .then(response => response.json())
             .then(response => {
               const {pageData} = response.data;
@@ -268,7 +268,7 @@ export default class extends React.Component {
       const id = warning.warningId;
       const imgUrls = await Promise.all(
         warning.devices.map(dev => 
-          fetch(`../jsons/getDeviceImg.json?warningId=${id}&unitId=${dev.devId}`, {
+          fetch(`${HOST}/getDeviceImg.json?warningId=${id}&unitId=${dev.devId}`, {
             method: 'GET',
           }).then(response => response.json())
           .then(response => {
@@ -310,7 +310,7 @@ export default class extends React.Component {
     form.append("warningId", warningId);
     form.append("usrId", userId);
     form.append("type", "TP");
-    fetch('../jsons/handleWarning.json', {
+    fetch(`${HOST}/handleWarning.json`, {
       method: 'POST',
       body: form,
     }).then(response => response.json())
@@ -337,7 +337,7 @@ export default class extends React.Component {
     form.append("warningId", warningId);
     form.append("usrId", userId);
     form.append("type", "FP");
-    fetch('../jsons/handleWarning.json', {
+    fetch(`${HOST}/handleWarning.json`, {
       method: 'POST',
       body: form,
     }).then(response => response.json())

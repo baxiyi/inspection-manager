@@ -1,6 +1,7 @@
 import React, {PureComponent} from 'react'
 import {Table, DatePicker, TimePicker, Button, message, Input} from 'antd'
 import moment from 'moment';
+import {HOST} from '../../config';
 import './index.css'
 
 const {Search} = Input;
@@ -21,7 +22,7 @@ export default class extends PureComponent {
   componentDidMount() {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    fetch(`../jsons/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}
+    fetch(`${HOST}/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}
     &endTime=${endTime}&page=${this.state.pageOffset}&size=10`)
     .then(response => response.json())
     .then(response => {

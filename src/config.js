@@ -1,1 +1,1 @@
-export const HOST = "http://210.30.97.234:8080/WebElectric";
+export const HOST = "/WebElectric";

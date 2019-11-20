@@ -3,6 +3,7 @@ import {Table, Modal, message, DatePicker, TimePicker, Button, Input} from 'antd
 import './index.css'
 import moment from 'moment'
 import Zmage from 'react-zmage'
+import { HOST } from '../../config'
 
 const {Search} = Input;
 
@@ -43,7 +44,7 @@ export default class extends PureComponent {
   componentDidMount() {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    fetch(`../jsons/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
+    fetch(`${HOST}/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
@@ -100,7 +101,7 @@ export default class extends PureComponent {
     console.log('update history warnings')
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    fetch(`../jsons/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
+    fetch(`${HOST}/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {
@@ -126,7 +127,7 @@ export default class extends PureComponent {
   }
 
   showDetail(id) {
-    fetch(`../jsons/getWarningDetail.json?warningId=${id}`, {
+    fetch(`${HOST}/getWarningDetail.json?warningId=${id}`, {
       method: 'GET',
     }).then(response => response.json())
     .then(async response => {
@@ -135,7 +136,7 @@ export default class extends PureComponent {
       res.warningId = warning.warningId;
       res.seq = 1;
       res.time = warning.occurTime;
-      await fetch(`../jsons/getWarningDetail.json?warningId=${warning.warningId}`)
+      await fetch(`${HOST}/getWarningDetail.json?warningId=${warning.warningId}`)
         .then(response => response.json())
         .then(response => {
           const {pageData} = response.data;
@@ -235,7 +236,7 @@ export default class extends PureComponent {
   async showPic() {
     const devices = this.state.detailData;
     const imgUrls = await Promise.all(
-      devices.map(dev => fetch(`../jsons/getDeviceImg.json?warningId=${dev.warningId}&unitId=${dev.devId}`)
+      devices.map(dev => fetch(`${HOST}/getDeviceImg.json?warningId=${dev.warningId}&unitId=${dev.devId}`)
       .then(response => response.json())
       .then(response => {
         return {
