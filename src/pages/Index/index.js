@@ -339,13 +339,16 @@ export default class extends React.Component {
   handleWarning(warningId) {
     const storage = window.sessionStorage;
     const userId = storage.getItem('userId');
-    let form = new FormData();
-    form.append("warningId", warningId);
-    form.append("usrId", userId);
-    form.append("type", "TP");
+    // let form = new FormData();
+    // form.append("warningId", warningId);
+    // form.append("usrId", userId);
+    // form.append("type", "TP");
     fetch(`${HOST}/handleWarning.json`, {
       method: 'POST',
-      body: form,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `warningId=${warningId}&usrId=${userId}&type=TP`,
     }).then(response => response.json())
     .then(response => {
       if (response.message == 'success') {
@@ -366,13 +369,16 @@ export default class extends React.Component {
   wrongWarning(warningId) {
     const storage = window.sessionStorage;
     const userId = storage.getItem('userId');
-    let form = new FormData();
-    form.append("warningId", warningId);
-    form.append("usrId", userId);
-    form.append("type", "FP");
+    // let form = new FormData();
+    // form.append("warningId", warningId);
+    // form.append("usrId", userId);
+    // form.append("type", "FP");
     fetch(`${HOST}/handleWarning.json`, {
       method: 'POST',
-      body: form,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `warningId=${warningId}&usrId=${userId}&type=FP`,
     }).then(response => response.json())
     .then(response => {
       if (response.message == 'success') {
