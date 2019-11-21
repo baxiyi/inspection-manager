@@ -17,6 +17,36 @@ export default class extends React.Component {
     }
   }
 
+  fetchCurrentWarnings() {
+    fetch(`${HOST}/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
+      method: 'GET',
+    }).then(response => response.json())
+    .then(response => {
+      if (response == null) {
+        return;
+      }
+      console.log(response);
+      const {pageData} = response.data;
+      let data = pageData.map((item, index) => {
+        return Object.assign(item, {
+          id: item.ruleId,
+          infor: item.info,
+          seq: index + 1,
+        });
+      });
+      const {totalPages} = response.data;
+      if (data.length > this.state.currentWarningsData.length) {
+        this.audioRef.play();
+        if (!this.state.isShowDetail) {
+          this.setState({
+            currentWarningsData: data,
+            totalPages,
+          });
+        }
+      }
+    });
+  }
+
   componentDidMount() {
     fetch(`${HOST}/getCurrentWarnings.json?page=${this.state.pageOffset}&size=10`, {
       method: 'GET',
@@ -36,7 +66,10 @@ export default class extends React.Component {
         currentWarningsData: data,
         totalPages,
       })
-    })
+    });
+    setInterval(() => {
+      this.fetchCurrentWarnings();
+    }, 10000);
   }
 
   updateCurrentWarnings() {
@@ -543,7 +576,7 @@ export default class extends React.Component {
     )
   }
   render() {
-    console.log('render')
+    console.log('render');
     const columns = [
       {
         title: '序号',
@@ -602,6 +635,7 @@ export default class extends React.Component {
     const data = this.state.currentWarningsData;
     return (
       <div className="index">
+        <audio src="http://data.huiyi8.com/2017/gha/03/17/1702.mp3" ref={(ele) => {this.audioRef = ele;}}></audio>
         <div className="warning-count">
           {'当前警告数：' + data.length}
         </div>

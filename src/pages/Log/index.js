@@ -90,6 +90,29 @@ export default class extends PureComponent {
 
   updateLogs() {
     console.log('update logs')
+    const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
+    const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    fetch(`${HOST}/getLogList.json?usrId=${this.state.searchText}&startTime=${startTime}
+    &endTime=${endTime}&page=${this.state.pageOffset}&size=10`)
+    .then(response => response.json())
+    .then(response => {
+      const {totalPages} = response.data;
+      console.log(totalPages)
+      const {pageData} = response.data;
+      const tableData = pageData.map((item, index) => {
+        return {
+          logId: item.logId,
+          seq: index + 1,
+          date: item.logTime,
+          handleDetail: item.content,
+          user: item.usrByUsrId.usrName,
+        }
+      });
+      this.setState({
+        tableData,
+        totalPages,
+      })
+    })
   }
 
   render() {

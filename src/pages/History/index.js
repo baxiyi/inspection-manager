@@ -44,6 +44,7 @@ export default class extends PureComponent {
   componentDidMount() {
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
+    console.log(`startTime: ${startTime}`)
     fetch(`${HOST}/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
       method: 'GET',
     }).then(response => response.json())
@@ -135,7 +136,7 @@ export default class extends PureComponent {
       let res = {};
       res.warningId = warning.warningId;
       res.seq = 1;
-      res.time = warning.occurTime;
+      res.time = warning.occureTime;
       await fetch(`${HOST}/getWarningDetail.json?warningId=${warning.warningId}`)
         .then(response => response.json())
         .then(response => {
@@ -240,7 +241,7 @@ export default class extends PureComponent {
       .then(response => response.json())
       .then(response => {
         return {
-          url: response.pageData,
+          url: response.data.pageData,
           desc: dev.devName,
         }
       })
@@ -337,40 +338,40 @@ export default class extends PureComponent {
           return obj;
         }
       },
-      {
-        title: '',
-        dataIndex: 'isHandle',
-        key: 'isHandle',
-        render: (value, record) => {
-          let obj = {
-            children: <span className="unable">标记为已处理</span>,
-            props: {},
-          };
-          if (record.index == 0) {
-            obj.props.rowSpan = record.devLen;
-          } else {
-            obj.props.rowSpan = 0;
-          }
-          return obj;
-        }
-      },
-      {
-        title: '',
-        dataIndex: 'wrongWarning',
-        key: 'wrongWarning',
-        render: (value, record) => {
-          let obj = {
-            children: <span className="unable">标记为误警告</span>,
-            props: {},
-          };
-          if (record.index == 0) {
-            obj.props.rowSpan = record.devLen;
-          } else {
-            obj.props.rowSpan = 0;
-          }
-          return obj;
-        }
-      }
+      // {
+      //   title: '',
+      //   dataIndex: 'isHandle',
+      //   key: 'isHandle',
+      //   render: (value, record) => {
+      //     let obj = {
+      //       children: <span className="unable">标记为已处理</span>,
+      //       props: {},
+      //     };
+      //     if (record.index == 0) {
+      //       obj.props.rowSpan = record.devLen;
+      //     } else {
+      //       obj.props.rowSpan = 0;
+      //     }
+      //     return obj;
+      //   }
+      // },
+      // {
+      //   title: '',
+      //   dataIndex: 'wrongWarning',
+      //   key: 'wrongWarning',
+      //   render: (value, record) => {
+      //     let obj = {
+      //       children: <span className="unable">标记为误警告</span>,
+      //       props: {},
+      //     };
+      //     if (record.index == 0) {
+      //       obj.props.rowSpan = record.devLen;
+      //     } else {
+      //       obj.props.rowSpan = 0;
+      //     }
+      //     return obj;
+      //   }
+      // }
     ];
     return (
       <Modal

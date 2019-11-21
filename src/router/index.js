@@ -45,12 +45,12 @@ export default class extends PureComponent {
                 return isLogin ? <Camera /> : <Redirect to="/login"/>
               }}
             />
-            <Route 
+            {/* <Route 
               path='/log'
               render={props => {
                 return isLogin ? <Log /> : <Redirect to="/login"/>
               }}
-            />
+            /> */}
             <Route 
               path='/about'
               render={props => {

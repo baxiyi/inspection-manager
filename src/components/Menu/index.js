@@ -9,8 +9,7 @@ class MenuComp extends PureComponent {
       '/': '1',
       '/history': '2',
       '/camera': '3',
-      '/log': '4',
-      '/about': '5',
+      '/about': '4',
     };
     const curPath = this.props.location.pathname;
     return (
@@ -27,10 +26,10 @@ class MenuComp extends PureComponent {
         <Menu.Item key='3'>
         <Link to="/camera">摄像头查看</Link>
         </Menu.Item>
-        <Menu.Item key='4'>
+        {/* <Menu.Item key='4'>
           <Link to="/log">日志系统</Link>
-        </Menu.Item>
-        <Menu.Item key='5'>
+        </Menu.Item> */}
+        <Menu.Item key='4'>
           <Link to="/about">关于</Link>
         </Menu.Item>
       </Menu>

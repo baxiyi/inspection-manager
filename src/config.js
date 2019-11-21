@@ -1,1 +1,1 @@
-export const HOST = "/WebElectric";
+export const HOST = "../jsons";
