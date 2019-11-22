@@ -28,8 +28,12 @@ class Login extends PureComponent {
       message.error('密码不能为空');
       return;
     }
-    fetch(`${HOST}/getLogIn.json?UsrId=${this.state.loginUserId}&UsrPassword=${this.state.loginPassword}`, {
-      method: 'GET',
+    fetch(`${HOST}/getLogIn.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `UsrId=${this.state.loginUserId}&UsrPassword=${this.state.loginPassword}`
     })
     .then(response => response.json())
     .then(response => {
@@ -64,7 +68,13 @@ class Login extends PureComponent {
       message.error('密码不能为空');
       return;
     }
-    fetch(`${HOST}/getRegister.json?UsrId=${this.state.registerUserId}&UsrName=${this.state.registerUserName}&UsrPassword=${this.state.registerPassword}`)
+    fetch(`${HOST}/getRegister.json`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `UsrId=${this.state.registerUserId}&UsrName=${this.state.registerUserName}&UsrPassword=${this.state.registerPassword}`,
+    })
     .then(response => response.json())
     .then(response => {
       if (response.data.pageData.success == "yes") {
