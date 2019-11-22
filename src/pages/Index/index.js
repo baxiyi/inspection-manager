@@ -25,7 +25,7 @@ export default class extends React.Component {
       if (response == null) {
         return;
       }
-      console.log(response);
+      console.log(response.data);
       const {pageData} = response.data;
       let data = pageData.map((item, index) => {
         return Object.assign(item, {
@@ -37,12 +37,12 @@ export default class extends React.Component {
       const {totalPages} = response.data;
       if (data.length > this.state.currentWarningsData.length) {
         this.audioRef.play();
-        if (!this.state.isShowDetail) {
-          this.setState({
-            currentWarningsData: data,
-            totalPages,
-          });
-        }
+      }
+      if (!this.state.isShowDetail) {
+        this.setState({
+          currentWarningsData: data,
+          totalPages,
+        });
       }
     });
   }
