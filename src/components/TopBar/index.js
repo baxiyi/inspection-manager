@@ -9,15 +9,16 @@ class TopBar extends PureComponent {
     const storage = window.sessionStorage;
     storage.setItem('isLogin', 'false');
     storage.setItem('userId', '');
+    storage.setItem('userName', '');
     this.props.history.push('/login');
     window.location.reload();
   }
 
   render() {
     const storage = window.sessionStorage;
-    let userId = '';
-    if (storage.getItem('userId')) {
-      userId = storage.getItem('userId')
+    let userName = '';
+    if (storage.getItem('userName')) {
+      userName = storage.getItem('userName')
     }
     return (
       <div className="top-bar">
@@ -26,7 +27,7 @@ class TopBar extends PureComponent {
           智能巡检系统
         </div>
         <div className="logout">
-          <span className="userid">用户: {userId}</span>
+          <span className="userid">用户: {userName}</span>
           <a className="logout-link" onClick={() => this.logout()}>
             退出登录 
             <Icon type="logout" />
