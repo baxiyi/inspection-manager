@@ -14,7 +14,7 @@
                   {
                       "shelfId": 2,
                       "shelfName": "2号主变测控屏",
-                      "hasWarning": true
+                      "warning": "yes"
                   }
               ],
               [
@@ -24,7 +24,7 @@
                   {
                       "shelfId": 3,
                       "shelfName": "1号主变测控屏",
-                      "hasWarning": false
+                      "hasWarning": "no"
                   }
               ]
           ]

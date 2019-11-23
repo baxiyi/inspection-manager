@@ -172,7 +172,7 @@ export default class extends PureComponent {
     const hasShelf = camera == null ? false : true;
     let hasWarning = false;
     if (hasShelf) {
-      hasWarning = camera.hasWarning;
+      hasWarning = camera.warning == 'yes';
     }
     return (
       <div className="camera-item">
