@@ -13,7 +13,8 @@
                   null,
                   {
                       "shelfId": 2,
-                      "shelfName": "2号主变测控屏"
+                      "shelfName": "2号主变测控屏",
+                      "hasWarning": true
                   }
               ],
               [
@@ -22,7 +23,8 @@
               [
                   {
                       "shelfId": 3,
-                      "shelfName": "1号主变测控屏"
+                      "shelfName": "1号主变测控屏",
+                      "hasWarning": false
                   }
               ]
           ]

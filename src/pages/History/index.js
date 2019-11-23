@@ -102,7 +102,12 @@ export default class extends PureComponent {
     console.log('update history warnings')
     const startTime = this.formatDate(this.state.startTime, 'yyyy-MM-dd hh:mm:ss')
     const endTime = this.formatDate(this.state.endTime, 'yyyy-MM-dd hh:mm:ss')
-    fetch(`${HOST}/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`, {
+    let url = `${HOST}/getHistoryWarnings.json?page=${this.state.pageOffset}&size=10&startTime=${startTime}&endTime=${endTime}`;
+    const {searchText} = this.state;
+    if (searchText != '') {
+      url = url + `&UsrId=${searchText}`;
+    }
+    fetch(url, {
       method: 'GET',
     }).then(response => response.json())
     .then(response => {

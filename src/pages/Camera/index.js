@@ -170,13 +170,17 @@ export default class extends PureComponent {
 
   renderCamera(camera) {
     const hasShelf = camera == null ? false : true;
+    let hasWarning = false;
+    if (hasShelf) {
+      hasWarning = camera.hasWarning;
+    }
     return (
       <div className="camera-item">
         {
           hasShelf ? (
             <div>
               <Popover content={camera.shelfName}>
-                <Button size="large" className="my-button" onClick={() => {
+                <Button size="large" className="my-button" type={hasWarning ? "danger" : ""} onClick={() => {
                   this.showDetail(camera.shelfId);
                 }}>
                   <Icon type="camera" theme="filled" className="my-icon"/>
