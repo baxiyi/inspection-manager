@@ -14,6 +14,7 @@ export default class extends PureComponent {
       cameraNum: 1,
       curShelfId: 0,
       detailData: null,
+      isSingle: true,
       startTime: this.getOneHourBefore(),
       endTime: new Date(),
       shevesList: [],
@@ -78,10 +79,12 @@ export default class extends PureComponent {
         ipAddress: pageData.ipAddress,
         imgUrls: pageData.images,
       };
+      const isSingle = pageData.single;
       this.setState({
         detailData,
         curShelfId: shelfId,
         isShowDetail: true,
+        isSingle,
         totalPages,
       })
     })
@@ -213,9 +216,11 @@ export default class extends PureComponent {
           <div className="camera-name" style={{fontWeight: 'bold'}}>{'摄像机' + this.state.cameraNum}</div>
           <div>{'IP: ' + String(this.state.detailData !== null ? this.state.detailData.ipAddress : '')}</div>
         </div>
-        <Button type="primary" onClick={() => this.toggleCamera()} className="toggle-button">
-          切换相机
-        </Button>
+        {this.state.isSingle ? null :
+          <Button type="primary" onClick={() => this.toggleCamera()} className="toggle-button">
+            切换相机
+          </Button>
+        }
         <div className="date">
           <div className="start-date">
             开始时间：
